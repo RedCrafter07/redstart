@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import chalk from 'chalk';
 import { mkdir, readdir, writeFile } from 'fs/promises';
 import inquirer from 'inquirer';
