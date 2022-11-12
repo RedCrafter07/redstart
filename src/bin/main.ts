@@ -1,4 +1,8 @@
-#!/usr/bin/env node
+#!/usr/bin / env node
+/**
+ * @license GPL3
+ * @author RedCrafter07 (https://github.com/RedCrafter07)
+ */
 
 import chalk from 'chalk';
 import { mkdir, readdir, writeFile } from 'fs/promises';
@@ -47,6 +51,20 @@ const { prompt } = inquirer;
 	const { config, packages } = await parseFile(configPath);
 
 	console.log(chalk.yellowBright('[/] Config file parsed successfully!'));
+
+	if (config.gitClone) {
+		const gitSpinner = createSpinner('Checking git...');
+		gitSpinner.start();
+		if (await spawnSync('git', ['-v']).error) {
+			gitSpinner.error({ text: ('Git is not installed') });
+		} else {
+			gitSpinner.update({ text: 'Cloning repository' });
+			const gitProc = await spawnSync('git', ['clone', config.gitClone]);
+			if (gitProc.status !== 0 || gitProc.error) gitSpinner.error({ text: 'Couldn\'t clone git Repository' });
+			else gitSpinner.success({ text: 'Updated repository' });
+		}
+		gitSpinner.stop();
+	}
 
 	console.log(chalk.green(`[/] Using ${config.packageManager}`));
 
