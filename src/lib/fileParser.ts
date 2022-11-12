@@ -74,8 +74,8 @@ export async function parseFile(path: string) {
 			language,
 			packageManager,
 			mainFile,
-			additionalConfig,
 			workDir,
+			additionalConfig,
 		},
 	};
 }
