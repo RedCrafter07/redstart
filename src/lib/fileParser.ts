@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const cwd = process.cwd();
 
-async function read(path: string) {
+export async function read(path: string) {
 	const file = await readFile(`${cwd}/${path}`, 'utf-8');
 	return file;
 }
