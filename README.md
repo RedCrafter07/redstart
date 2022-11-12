@@ -14,7 +14,7 @@ RedStart comes with its own file format. It is a custom format for simple config
 
 To get started, just create a file ending with `.rsproj`.
 
-In the first line, you define all the packages you want to install seperated by a comma.
+In the first line, you define all the packages you want to install seperated by a comma. For example:
 
 ```rsproj
 express, @types/express, typescript, tsx
@@ -26,7 +26,7 @@ In the next lines (after an optional empty line) you can define some config.
 
 ```rsproj
 language: <typescript | javascript>
-# The package manager to install the packages in the first line.
+# The package manager to install the packages in the first line with.
 packageManager: <pnpm | yarn | npn>
 # This is a comment.
 # Path of the entry file. e.g. src/index.ts
