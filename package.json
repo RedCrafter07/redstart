@@ -24,6 +24,7 @@
 		"gradient-string": "^2.0.2",
 		"inquirer": "8.2.0",
 		"moment": "^2.29.4",
+		"nanospinner": "^1.1.0",
 		"open": "^8.4.0",
 		"ora": "^6.1.2",
 		"typescript": "^4.8.4"
