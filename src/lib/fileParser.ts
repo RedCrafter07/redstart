@@ -36,7 +36,7 @@ export async function parseFile(path: string) {
 		lines = fileContent.split('\n').map((l) => l.trim().replace('\r', ''));
 	}
 
-	const packages = lines[0].split(', ');
+	const packages = lines[0].split(',').map((l) => l.trim());
 	const sliceAmount = lines[1].length > 1 ? 1 : 2;
 	const config = lines.slice(sliceAmount).reduce((acc, line) => {
 		const [key, value] = line.split(':').map((l) => l.trim());
