@@ -151,4 +151,16 @@ const spinnerOptions: OraOptions = {
 			`[/] Time taken: ${packageInstallationTs - startUnix} seconds`,
 		),
 	);
+
+	console.log('	- Parsing config file:', parsingTs - startUnix, 'seconds');
+	console.log(
+		'	- Initializing main file:',
+		fileInitializationTs - parsingTs,
+		'seconds',
+	);
+	console.log(
+		'	- Installing packages:',
+		packageInstallationTs - fileInitializationTs,
+		'seconds',
+	);
 })();
