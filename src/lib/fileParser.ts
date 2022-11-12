@@ -1,6 +1,13 @@
+/**
+ * @license GPL3
+ * @author RedCrafter07 (https://github.com/RedCrafter07)
+ * @contributor FishingHacks (https://github.com/FishingHacks)
+ */
+
 import { readFile } from 'fs/promises';
 import axios from 'axios';
 import chalk from 'chalk';
+import { join } from 'path';
 
 const cwd = process.cwd();
 
@@ -25,8 +32,8 @@ export async function parseFile(path: string) {
 
 	let lines: string[] = file
 		.split('\n')
-		.map((l) => l.trim().replace('\r', ''))
-		.filter((l) => !l.startsWith('# '));
+		.map((l) => l.trim().replace('\r', '').split('#')[0] || '')
+		.filter((l) => !l.startsWith('# ') && l.length > 0);
 
 	if (lines[0].startsWith('pullFrom: ')) {
 		const file = lines[0].slice('pullFrom:'.length).trim();
@@ -49,6 +56,7 @@ export async function parseFile(path: string) {
 		packageManager,
 		mainFile,
 		workDir: setWorkDir,
+		gitClone,
 		...additionalConfig
 	} = config;
 
@@ -75,6 +83,7 @@ export async function parseFile(path: string) {
 			packageManager,
 			mainFile,
 			workDir,
+			gitClone: (gitClone || false) as false|string,
 			additionalConfig,
 		},
 	};

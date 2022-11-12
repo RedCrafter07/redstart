@@ -1,3 +1,8 @@
+/**
+ * @license GPL3
+ * @author RedCrafter07 (https://github.com/RedCrafter07)
+ */
+
 import { execSync } from 'child_process';
 
 export default async function checkPackageManager(

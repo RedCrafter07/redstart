@@ -1,5 +1,10 @@
-axios, chalk@4.1.2, typescript, @types/node
+axios, chalk@4.1.2, typescript, @types/node#, test
 
+# Required
 language: typescript
 packageManager: pnpm
 mainFile: src/main.ts
+
+# Optional:
+# gitClone: https://www.gitlab.com/a/b.git
+# cwd: 
