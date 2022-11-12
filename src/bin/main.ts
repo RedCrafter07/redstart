@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import { mkdir, readdir, writeFile } from 'fs/promises';
 import inquirer from 'inquirer';
 import moment from 'moment';
-import ora, { Options as OraOptions } from 'ora';
+import { createSpinner } from 'nanospinner';
 import path from 'path';
 import { argv } from 'process';
 import checkPackageManager from '../lib/checkPackageManager';
@@ -14,14 +14,6 @@ let cwd = process.cwd();
 const args = argv.slice(2);
 
 const { prompt } = inquirer;
-
-const spinnerOptions: OraOptions = {
-	interval: 100,
-	spinner: {
-		frames: ['[-]', '[\\]', '[|]', '[/]'],
-	},
-	color: 'blue',
-};
 
 (async () => {
 	const startUnix = moment().unix();
@@ -56,10 +48,7 @@ const spinnerOptions: OraOptions = {
 
 	console.log(chalk.green(`[/] Using ${config.packageManager}`));
 
-	const pmSpinner = ora({
-		...spinnerOptions,
-		text: 'Checking package manager...',
-	});
+	const pmSpinner = createSpinner('Checking package manager...');
 
 	pmSpinner.start();
 
@@ -68,11 +57,11 @@ const spinnerOptions: OraOptions = {
 	);
 
 	if (!isInstalled) {
-		pmSpinner.fail('Package manager not installed!');
+		pmSpinner.error({ text: 'Package manager not installed!' });
 		return;
 	}
 
-	pmSpinner.succeed('Package manager checked!');
+	pmSpinner.success({ text: 'Package manager checked!' });
 
 	console.log(chalk.green(`[+] Using ${config.language}`));
 	console.log(chalk.green(`[+] Main file: ${config.mainFile}`));
@@ -82,33 +71,27 @@ const spinnerOptions: OraOptions = {
 
 	const parsingTs = moment().unix();
 
-	const fileInitSpinner = ora({
-		...spinnerOptions,
-		text: 'Initializing main file...',
-	});
+	const fileInitSpinner = createSpinner('Initializing main file...');
 
 	fileInitSpinner.start();
 
-	fileInitSpinner.info('Creating directories for main file...');
+	fileInitSpinner.update({ text: 'Creating directories for main file...' });
 
 	const filePath = path.resolve(cwd, config.mainFile);
 
 	await mkdir(path.dirname(filePath), { recursive: true });
 
-	fileInitSpinner.info('Creating main file...');
+	fileInitSpinner.update({ text: 'Creating main file...' });
 
 	await writeFile(filePath, "console.log('Hello World!');");
 
-	fileInitSpinner.succeed('Main file initialized!');
+	fileInitSpinner.success({ text: 'Main file initialized!' });
 
 	const fileInitializationTs = moment().unix();
 
 	console.log(chalk.yellow(`[/] Installing packages ${packages.join(', ')}`));
 
-	const packageSpinner = ora({
-		...spinnerOptions,
-		text: 'Installing packages...',
-	});
+	const packageSpinner = createSpinner('Installing packages...');
 
 	packageSpinner.start();
 
@@ -116,13 +99,13 @@ const spinnerOptions: OraOptions = {
 
 	const initArgs = `init${packageManager != 'pnpm' ? ' -y' : ''}`.split(' ');
 
-	packageSpinner.info('Initializing package.json');
+	packageSpinner.update({ text: 'Initializing package.json' });
 
 	const initProcess = spawnSync(packageManager, initArgs, {
 		cwd,
 	});
 
-	packageSpinner.info('Installing packages');
+	packageSpinner.update({ text: 'Installing packages' });
 
 	const packageManagerArgs = ['add', ...packages];
 
@@ -135,12 +118,12 @@ const spinnerOptions: OraOptions = {
 	);
 
 	if (packageManagerProcess.status !== 0) {
-		packageSpinner.fail('Failed to install packages!');
+		packageSpinner.error({ text: 'Failed to install packages!' });
 
 		return;
 	}
 
-	packageSpinner.succeed('Packages installed!');
+	packageSpinner.success({ text: 'Packages installed!' });
 
 	const packageInstallationTs = moment().unix();
 
