@@ -44,7 +44,13 @@ export async function parseFile(path: string) {
 		return acc;
 	}, {} as Record<string, string>);
 
-	const { language, packageManager, mainFile, ...additionalConfig } = config;
+	const {
+		language,
+		packageManager,
+		mainFile,
+		workDir: setWorkDir,
+		...additionalConfig
+	} = config;
 
 	if (!language || !packageManager || !mainFile) {
 		if (!language) console.log(chalk.red('[!] Language not specified'));
@@ -60,6 +66,8 @@ export async function parseFile(path: string) {
 		process.exit(1);
 	}
 
+	let workDir = setWorkDir || cwd;
+
 	return {
 		packages,
 		config: {
@@ -67,6 +75,7 @@ export async function parseFile(path: string) {
 			packageManager,
 			mainFile,
 			additionalConfig,
+			workDir,
 		},
 	};
 }
