@@ -53,6 +53,8 @@ packageManager: pnpm
 mainFile: src/main.ts
 ```
 
+Feel free to check out the [example file](examples/example.rsproj)!
+
 ## License
 
 RedStart is licensed under the GNU General Public License v3.0. See [LICENSE](LICENSE) for more information.
