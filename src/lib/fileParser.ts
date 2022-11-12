@@ -23,6 +23,14 @@ export async function parseFile(path: string) {
 	const file = await read(path);
 	let lines: string[] = file.split('\n').map((l) => l.trim().replace('\r', ''));
 
+	if (lines[0].startsWith('pullFrom: ')) {
+		const file = lines[0].slice('pullFrom: '.length);
+
+		const fileContent: string = await (await axios.get(file)).data.toString();
+
+		lines = fileContent.split('\n').map((l) => l.trim().replace('\r', ''));
+	}
+
 	const packages = lines[0].split(', ');
 	const sliceAmount = lines[1].length > 1 ? 1 : 2;
 	const config = lines.slice(sliceAmount).reduce((acc, line) => {
