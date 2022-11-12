@@ -41,5 +41,3 @@ export async function parseFile(path: string) {
 
 	console.log(packages, config);
 }
-
-parseFile('test.rsconf');
