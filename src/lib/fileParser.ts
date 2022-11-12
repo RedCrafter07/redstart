@@ -24,7 +24,7 @@ export async function parseFile(path: string) {
 	let lines: string[] = file.split('\n').map((l) => l.trim().replace('\r', ''));
 
 	if (lines[0].startsWith('pullFrom: ')) {
-		const file = lines[0].slice('pullFrom: '.length);
+		const file = lines[0].slice('pullFrom:'.length).trim();
 
 		const fileContent: string = await (await axios.get(file)).data.toString();
 
