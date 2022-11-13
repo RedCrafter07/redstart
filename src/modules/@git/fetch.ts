@@ -36,7 +36,7 @@ export default {
                                 "remote",
                                 "add",
                                 "origin",
-                                `"${config.repository}"`,
+                                config.repository,
                             ],
                             { cwd }
                         ).status !== 0
