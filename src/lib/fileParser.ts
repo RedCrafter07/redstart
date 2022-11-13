@@ -83,11 +83,11 @@ export async function parseFile(path: string) {
             );
             process.exit(1);
         }
-        const _moduleConfObj: Record<string, string> = {};
+        const moduleConfObj: Record<string, string> = {};
         el.config?.forEach((el) =>
-            !el ? null : (_moduleConfObj[el.key] = el?.value)
+            !el ? null : (moduleConfObj[el.key] = el?.value)
         );
-        configObj[el.module] = _moduleConfObj;
+        configObj[el.module] = moduleConfObj;
     });
 
     return {
