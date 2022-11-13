@@ -43,8 +43,8 @@ export async function parseFile(path: string) {
 	const packages = lines[0].split(',').map((l) => l.trim());
 	const sliceAmount = lines[1].length > 1 ? 1 : 2;
 	const config = lines.slice(sliceAmount).reduce((acc, line) => {
-		const [key, value] = line.split(':').map((l) => l.trim());
-		acc[key] = value;
+		const [key, ...value] = line.split(':').map((l) => l.trim());
+		acc[key] = value.join(':');
 		return acc;
 	}, {} as Record<string, string>);
 
@@ -57,7 +57,7 @@ export async function parseFile(path: string) {
 		...additionalConfig
 	} = config;
 
-	if (!language || !packageManager || !mainFile) {
+	if ((!language || !packageManager || !mainFile) && !gitClone) {
 		if (!language) console.log(chalk.red('[!] Language not specified'));
 		if (!packageManager)
 			console.log(chalk.red('[!] Package manager not specified'));
@@ -68,6 +68,11 @@ export async function parseFile(path: string) {
 			chalk.yellow('[/] You may configure these values in the config file.'),
 		);
 
+		process.exit(1);
+	}
+
+	if (gitClone && !packageManager) {
+		console.log(chalk.red('[!] Package manager not specified'));
 		process.exit(1);
 	}
 
