@@ -26,7 +26,7 @@ To get started, just create a file ending with `.rsproj`.
 > 3. line
 > ```
 
-In the first line, you define the modules, that you want to use. You can find the modules and their proper usage below and in [./usage](./usage/index.md)
+In the first line, you define the modules, that you want to use. You can find the modules and their proper usage below and in the [usage documentation](./usage/index.md)
 
 In the next lines (after an optional empty line) you define the config for the modules.
 You start the config by putting the module name in Square Brackets. After that, you define the config using key: name. Neither key nor name is allowed to have a linebreak. The key can't have whitespaces or ':'s
