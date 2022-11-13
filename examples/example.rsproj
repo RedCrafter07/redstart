@@ -7,4 +7,4 @@ mainFile: src/main.ts
 
 # Optional:
 # gitClone: https://www.gitlab.com/a/b.git
-# cwd: 
+# workDir: 
