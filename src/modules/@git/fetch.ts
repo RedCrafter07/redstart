@@ -27,14 +27,15 @@ export default {
                     text: "[!] Error: Couldn't initialize git Repository",
                 });
             gitSpinner.update({ text: "Fetching repository" });
-            spawnSync("git", ["remote", "add", "origin", config.repository], {
-                cwd,
-            });
-
-            if (spawnSync("git", ["pull"], { cwd }).status !== 0)
-                return gitSpinner.error({
-                    text: "Couldn't fetch remote repository",
-                });
+            if (
+                spawnSync(
+                    "git",
+                    ["remote", "add", "origin", config.repository],
+                    {
+                        cwd,
+                    }
+                ).status === 0
+            ) spawnSync("git", ["pull"], { cwd });
             await new Promise((r) => setTimeout(r, 1000));
             if (config.branch) {
                 const cmd = "checkout " + config.branch;
@@ -46,6 +47,10 @@ export default {
                         )
                     );
             }
+            if (spawnSync("git", ["pull"], { cwd }).status !== 0)
+                return gitSpinner.error({
+                    text: "Couldn't fetch remote repository",
+                });
             return gitSpinner.success({
                 text: "Successfully fetched remote repository",
             });

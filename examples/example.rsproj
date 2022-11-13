@@ -1,6 +1,6 @@
-@install/node, echo, @git/gitignore
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Modules
+@install/node, echo, @git/gitignore, @test/js
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# Modules
 
 [@install/node]
 # Required
@@ -16,3 +16,6 @@ color: aqua
 [@git/gitignore]
 language: ts
 additional: test/
+
+[@test/js]
+testfile: ./test.js
