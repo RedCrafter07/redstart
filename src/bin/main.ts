@@ -109,21 +109,23 @@ const { prompt } = inquirer;
 
 	const parsingTs = moment().unix();
 
-	const fileInitSpinner = createSpinner('Initializing main file...');
+	if (config.mainFile) {
+		const fileInitSpinner = createSpinner('Initializing main file...');
 
-	fileInitSpinner.start();
+		fileInitSpinner.start();
 
-	fileInitSpinner.update({ text: 'Creating directories for main file...' });
+		fileInitSpinner.update({ text: 'Creating directories for main file...' });
 
-	const filePath = path.resolve(cwd, config.mainFile);
+		const filePath = path.resolve(cwd, config.mainFile);
 
-	await mkdir(path.dirname(filePath), { recursive: true });
+		await mkdir(path.dirname(filePath), { recursive: true });
 
-	fileInitSpinner.update({ text: 'Creating main file...' });
+		fileInitSpinner.update({ text: 'Creating main file...' });
 
-	await writeFile(filePath, "console.log('Hello World!');");
+		await writeFile(filePath, "console.log('Hello World!');");
 
-	fileInitSpinner.success({ text: 'Main file initialized!' });
+		fileInitSpinner.success({ text: 'Main file initialized!' });
+	}
 
 	const fileInitializationTs = moment().unix();
 
