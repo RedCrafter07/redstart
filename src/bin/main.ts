@@ -4,13 +4,19 @@
  * @author RedCrafter07 (https://github.com/RedCrafter07)
  */
 
-import chalk from "chalk";
+import chalk from 'chalk';
 import { existsSync } from "fs";
-import { readdir } from "fs/promises";
-import inquirer from "inquirer";
-import path, { join } from "path";
-import { argv } from "process";
-import { parseFile } from "../lib/fileParser";
+import { mkdir, readdir, writeFile, cp, rmdir } from 'fs/promises';
+import inquirer from 'inquirer';
+import moment from 'moment';
+import { createSpinner } from 'nanospinner';
+import path, [ join } from 'path';
+import { argv } from 'process';
+import checkPackageManager from '../lib/checkPackageManager';
+import { parseFile } from '../lib/fileParser';
+import { sync as spawnSync } from 'cross-spawn';
+
+let cwd = process.cwd();
 
 const args = argv.slice(2);
 
