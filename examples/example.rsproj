@@ -1,5 +1,5 @@
-@install/node, echo
-# ^^^^^^^^^^^^^^^^^
+@install/node, echo, @git/gitignore
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 # Modules
 
 [@install/node]
@@ -12,3 +12,7 @@ mainFile: src/main.ts
 [echo]
 message: Hello, World! This should be followed by nothing# When you see this, there's a problem going on :<
 color: aqua
+
+[@git/gitignore]
+language: ts
+additional: test/
