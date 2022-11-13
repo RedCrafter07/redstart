@@ -30,17 +30,14 @@ mainFile: src/index.ts
 export async function parseFile(path: string) {
 	const file = await read(path);
 
-	let lines: string[] = file
-		.split('\n')
-		.map((l) => l.trim().replace('\r', '').split('#')[0] || '')
-		.filter((l) => !l.startsWith('# ') && l.length > 0);
+	let lines: string[] = parseLines(file);
 
 	if (lines[0].startsWith('pullFrom: ')) {
 		const file = lines[0].slice('pullFrom:'.length).trim();
 
 		const fileContent: string = await (await axios.get(file)).data.toString();
 
-		lines = fileContent.split('\n').map((l) => l.trim().replace('\r', ''));
+		lines = parseLines(fileContent);
 	}
 
 	const packages = lines[0].split(',').map((l) => l.trim());
@@ -83,8 +80,15 @@ export async function parseFile(path: string) {
 			packageManager,
 			mainFile,
 			workDir,
-			gitClone: (gitClone || false) as false|string,
+			gitClone: (gitClone || false) as false | string,
 			additionalConfig,
 		},
 	};
+}
+
+function parseLines(file: string) {
+	return file
+		.split('\n')
+		.map((l) => l.trim().replace('\r', '').split('#')[0] || '')
+		.filter((l) => !l.startsWith('# ') && l.length > 0);
 }
