@@ -8,7 +8,7 @@ export default {
     validate(config, cwd) {
         return (
             is.set(config.language) &&
-            ["javascript", "js", "ts", "typescript"].includes(config.language)
+            ["javascript", "js", "ts", "typescript", ""].includes(config.language)
         );
     },
     initiate(config, cwd) {

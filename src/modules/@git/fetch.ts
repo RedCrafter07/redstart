@@ -2,9 +2,10 @@ import { createSpinner } from "nanospinner";
 import { sync as spawnSync } from "cross-spawn";
 import { Module } from "../../types";
 import chalk from "chalk";
+import { is } from "../../lib/utils";
 
 export default {
-    validate: (config, cwd) => true,
+    validate: (config, cwd) => is.set(config.repository),
     async initiate(config, cwd) {
         const gitSpinner = createSpinner("Checking git...");
         gitSpinner.start();
@@ -18,7 +19,7 @@ export default {
                 gitSpinner.update({ text: "Initializing repository" });
                 await spawnSync("git", ["init"], { cwd });
             }
-            remote = spawnSync("git", ["remote", "get-url", "origin"], {
+            remote = spawnSync("git", ["remote"], {
                 cwd,
             });
             if (remote.status !== 0)

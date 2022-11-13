@@ -14,47 +14,71 @@ RedStart comes with its own file format. It is a custom format for simple config
 
 To get started, just create a file ending with `.rsproj`.
 
-In the first line, you define all the packages you want to install seperated by a comma. For example:
+> # Info
+> Comments are prefixed with '#' and go to the end of the line. The line numbering ignores comments and empty lines. Iex:
+> ```
+> # aaa
+> # abbbb
+> 1. line
+> #cccc
+> 2. line
+> 
+> 3. line
+> ```
 
-```rsproj
-express, @types/express, typescript, tsx
+In the first line, you define the modules, that you want to use. You can find the modules and their proper usage below and in [./usage](./usage/index.md)
+
+In the next lines (after an optional empty line) you define the config for the modules.
+You start the config by putting the module name in Square Brackets. After that, you define the config using key: name. Neither key nor name is allowed to have a linebreak. The key can't have whitespaces or ':'s
+
+Syntax:
+
 ```
+# ...modules
+echo, @install/node
 
-In the next lines (after an optional empty line) you can define some config.
+[echo]
+message: This is a message
+color: aqua
 
-### Required Values
-
-```rsproj
-language: <typescript | javascript>
-# The package manager to install the packages in the first line with.
-packageManager: <pnpm | yarn | npm>
-# This is a comment.
-# Path of the entry file. e.g. src/index.ts
-mainFile: <path>
-```
-
-### Optional Values
-
-```rsproj
-workDir: <path>
-# Important: If you use pullFrom, you need to specify pullFrom on the first line.
-pullFrom: <rawFileURL>
-# You need to specify the line with packages too.
-gitClone: <gitURL>
+[@install/node]
+packages: @types/node
+mainFile: main.ts
+language: ts,
+packageManager: pnpm
 ```
 
 ### Important!
 
 The capitalization of the keys and the values is important.
 
+## Datatypes
+
+- Boolean: true/false
+- Array: Values, without quotes, seperated by ','. After and before the ',', all whitespaces (' ') will be trimmed
+
+
 ## Example
 
 ```rsproj
-axios, chalk@4.1.2, typescript, @types/node
+@install/node, echo, @git/gitignore
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# Modules
 
+[@install/node]
+# Required
+packages: axios, chalk@4.1.2, typescript, @types/node
 language: typescript
 packageManager: pnpm
 mainFile: src/main.ts
+
+[echo]
+message: Hello, World! This should be followed by nothing# When you see this, there's a problem going on :<
+color: aqua
+
+[@git/gitignore]
+language: ts
+additional: test/
 ```
 
 Feel free to check out the [example file](examples/example.rsproj)!
