@@ -32,12 +32,7 @@ export default {
                     if (
                         spawnSync(
                             "git",
-                            [
-                                "remote",
-                                "add",
-                                "origin",
-                                config.repository,
-                            ],
+                            ["remote", "add", "origin", config.repository],
                             { cwd }
                         ).status !== 0
                     )
@@ -52,13 +47,31 @@ export default {
                             ") already exists",
                     });
             }
-            if (spawnSync("git", ["pull", "--set-upstream-to=origin/" + (config.branch || "master")], { cwd }).status !== 0)
+            if (config.branch) {
+                if (
+                    spawnSync("git", [
+                        "branch",
+                        "--set-upstream-to=origin/" + config.branch,
+                    ]).status !== 0
+                )
+                    console.log(
+                        chalk.redBright(
+                            "[!] Branch " + config.branch + " not found!"
+                        )
+                    );
+            }
+            if (spawnSync("git", ["pull"], { cwd }).status !== 0)
                 return gitSpinner.error({
                     text: "Couldn't fetch remote repository",
                 });
-            return gitSpinner.success({ text: "Successfully fetched remote repository" });
+            return gitSpinner.success({
+                text: "Successfully fetched remote repository",
+            });
         }
-        gitSpinner.update({text: "[/] Warn: Something unexpected happened.", color: 'orange'})
+        gitSpinner.update({
+            text: "[/] Warn: Something unexpected happened.",
+            color: "orange",
+        });
         gitSpinner.stop();
     },
 } as Module;
