@@ -27,44 +27,25 @@ export default {
                     text: "[!] Error: Couldn't initialize git Repository",
                 });
             gitSpinner.update({ text: "Fetching repository" });
-            if (remote.stdout.toString() !== config.repository) {
-                if (remote.stdout.toString() === "") {
-                    if (
-                        spawnSync(
-                            "git",
-                            ["remote", "add", "origin", config.repository],
-                            { cwd }
-                        ).status !== 0
-                    )
-                        return gitSpinner.error({
-                            text: "Couldn't add remote-url",
-                        });
-                } else
-                    return gitSpinner.error({
-                        text:
-                            "A git repository with another url (" +
-                            remote.stdout.toString() +
-                            ") already exists",
-                    });
-            }
+            spawnSync("git", ["remote", "add", "origin", config.repository], {
+                cwd,
+            });
+
+            if (spawnSync("git", ["pull"], { cwd }).status !== 0)
+                return gitSpinner.error({
+                    text: "Couldn't fetch remote repository",
+                });
+            await new Promise((r) => setTimeout(r, 1000));
             if (config.branch) {
-                if (
-                    spawnSync("git", [
-                        "branch",
-                        "--set-upstream-to=origin/" + config.branch,
-                        "master"
-                    ]).status !== 0
-                )
+                const cmd = "checkout " + config.branch;
+                console.log("'git " + cmd + "'");
+                if (spawnSync("git", ["checkout", config.branch]).status !== 0)
                     console.log(
                         chalk.redBright(
                             "[!] Branch " + config.branch + " not found!"
                         )
                     );
             }
-            if (spawnSync("git", ["pull"], { cwd }).status !== 0)
-                return gitSpinner.error({
-                    text: "Couldn't fetch remote repository",
-                });
             return gitSpinner.success({
                 text: "Successfully fetched remote repository",
             });

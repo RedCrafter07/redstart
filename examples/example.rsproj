@@ -1,6 +1,6 @@
 @install/node, echo, @git/gitignore
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# Modules
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Modules
 
 [@install/node]
 # Required
