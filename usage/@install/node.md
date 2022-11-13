@@ -7,7 +7,7 @@ Install node packages
 **Required fields:**
 
 - packages
-> The packagesto install, Type: Array
+> The packages to install, Type: Array
 
 - language
 > The language you want to write your files in. javascript or typescript
@@ -16,7 +16,7 @@ Install node packages
 > The package manager to use. Either yarn, pnpm or npm
 
 - mainFile
-> The mainfile of your program
+> The main file of your program
 
 **Optional Fields:**
 
