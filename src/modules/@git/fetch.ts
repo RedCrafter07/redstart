@@ -52,6 +52,7 @@ export default {
                     spawnSync("git", [
                         "branch",
                         "--set-upstream-to=origin/" + config.branch,
+                        "master"
                     ]).status !== 0
                 )
                     console.log(
