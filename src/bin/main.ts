@@ -5,7 +5,7 @@
  */
 
 import chalk from 'chalk';
-import { mkdir, readdir, writeFile } from 'fs/promises';
+import { mkdir, readdir, writeFile, cp, rmdir } from 'fs/promises';
 import inquirer from 'inquirer';
 import moment from 'moment';
 import { createSpinner } from 'nanospinner';
@@ -52,21 +52,6 @@ const { prompt } = inquirer;
 
 	console.log(chalk.yellowBright('[/] Config file parsed successfully!'));
 
-	if (config.gitClone) {
-		const gitSpinner = createSpinner('Checking git...');
-		gitSpinner.start();
-		if (await spawnSync('git', ['-v']).error) {
-			gitSpinner.error({ text: 'Git is not installed' });
-		} else {
-			gitSpinner.update({ text: 'Cloning repository' });
-			const gitProc = await spawnSync('git', ['clone', config.gitClone]);
-			if (gitProc.status !== 0 || gitProc.error)
-				gitSpinner.error({ text: "Couldn't clone git Repository" });
-			else gitSpinner.success({ text: 'Updated repository' });
-		}
-		gitSpinner.stop();
-	}
-
 	console.log(chalk.green(`[/] Using ${config.packageManager}`));
 
 	const pmSpinner = createSpinner('Checking package manager...');
@@ -85,10 +70,42 @@ const { prompt } = inquirer;
 	pmSpinner.success({ text: 'Package manager checked!' });
 
 	console.log(chalk.green(`[+] Using ${config.language}`));
-	console.log(chalk.green(`[+] Main file: ${config.mainFile}`));
+	if (config.mainFile)
+		console.log(chalk.green(`[+] Main file: ${config.mainFile}`));
 
 	cwd = config.workDir;
 	console.log(chalk.green(`[+] Working directory: ${cwd}`));
+
+	let gitTimestamp: number | undefined;
+
+	if (config.gitClone) {
+		console.log(config.gitClone);
+		const gitSpinner = createSpinner('Checking git...');
+		gitSpinner.start();
+		if (await spawnSync('git', ['-v']).error) {
+			gitSpinner.error({ text: 'Git is not installed' });
+		} else {
+			gitSpinner.update({ text: 'Cloning repository' });
+			const gitProc = await spawnSync('git', [
+				'clone',
+				config.gitClone,
+				'repo',
+			]);
+
+			if (gitProc.status !== 0 || gitProc.error)
+				gitSpinner.error({ text: "Couldn't clone git Repository" });
+			else gitSpinner.success({ text: 'Updated repository' });
+		}
+
+		gitSpinner.start({ text: 'Moving files...' });
+
+		await cp(path.join(cwd, 'repo'), cwd, { recursive: true });
+		await rmdir(path.join(cwd, 'repo'), { recursive: true });
+
+		gitSpinner.success({ text: 'Moved files!' });
+
+		gitTimestamp = moment().unix();
+	}
 
 	const parsingTs = moment().unix();
 
@@ -157,11 +174,25 @@ const { prompt } = inquirer;
 	);
 
 	console.log('	- Parsing config file:', parsingTs - startUnix, 'seconds');
-	console.log(
-		'	- Initializing main file:',
-		fileInitializationTs - parsingTs,
-		'seconds',
-	);
+
+	if (gitTimestamp && config.gitClone) {
+		console.log(
+			chalk.yellowBright(
+				`	- Git clone time: ${parsingTs - gitTimestamp} seconds`,
+			),
+		);
+
+		console.log(
+			'	- Initializing main file:',
+			gitTimestamp - parsingTs,
+			'seconds',
+		);
+	} else
+		console.log(
+			'	- Initializing main file:',
+			fileInitializationTs - parsingTs,
+			'seconds',
+		);
 	console.log(
 		'	- Installing packages:',
 		packageInstallationTs - fileInitializationTs,
