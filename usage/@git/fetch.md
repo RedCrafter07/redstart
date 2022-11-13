@@ -13,4 +13,5 @@ Fetch a remote repository
 
 **Optional Fields:**
 
-None
+- branch
+> The branch to pull from, required when there are multiple branches

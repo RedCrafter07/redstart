@@ -52,7 +52,7 @@ export default {
                             ") already exists",
                     });
             }
-            if (spawnSync("git", ["pull"], { cwd }).status !== 0)
+            if (spawnSync("git", ["pull", "--set-upstream-to=origin/" + (config.branch || "master")], { cwd }).status !== 0)
                 return gitSpinner.error({
                     text: "Couldn't fetch remote repository",
                 });
