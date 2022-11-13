@@ -1,4 +1,4 @@
-#!/usr/bin / env node
+#!/usr/bin/env node
 /**
  * @license GPL3
  * @author RedCrafter07 (https://github.com/RedCrafter07)
@@ -56,11 +56,12 @@ const { prompt } = inquirer;
 		const gitSpinner = createSpinner('Checking git...');
 		gitSpinner.start();
 		if (await spawnSync('git', ['-v']).error) {
-			gitSpinner.error({ text: ('Git is not installed') });
+			gitSpinner.error({ text: 'Git is not installed' });
 		} else {
 			gitSpinner.update({ text: 'Cloning repository' });
 			const gitProc = await spawnSync('git', ['clone', config.gitClone]);
-			if (gitProc.status !== 0 || gitProc.error) gitSpinner.error({ text: 'Couldn\'t clone git Repository' });
+			if (gitProc.status !== 0 || gitProc.error)
+				gitSpinner.error({ text: "Couldn't clone git Repository" });
 			else gitSpinner.success({ text: 'Updated repository' });
 		}
 		gitSpinner.stop();
