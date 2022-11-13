@@ -39,7 +39,6 @@ export default {
             await new Promise((r) => setTimeout(r, 1000));
             if (config.branch) {
                 const cmd = "checkout " + config.branch;
-                console.log("'git " + cmd + "'");
                 if (spawnSync("git", ["checkout", config.branch]).status !== 0)
                     console.log(
                         chalk.redBright(
