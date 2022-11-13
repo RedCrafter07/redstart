@@ -27,7 +27,7 @@ In the next lines (after an optional empty line) you can define some config.
 ```rsproj
 language: <typescript | javascript>
 # The package manager to install the packages in the first line with.
-packageManager: <pnpm | yarn | npn>
+packageManager: <pnpm | yarn | npm>
 # This is a comment.
 # Path of the entry file. e.g. src/index.ts
 mainFile: <path>
@@ -37,6 +37,10 @@ mainFile: <path>
 
 ```rsproj
 workDir: <path>
+# Important: If you use pullFrom, you need to specify pullFrom on the first line.
+pullFrom: <rawFileURL>
+# You need to specify the line with packages too.
+gitClone: <gitURL>
 ```
 
 ### Important!

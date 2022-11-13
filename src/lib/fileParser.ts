@@ -108,3 +108,10 @@ function parseLine(line: string): null | { key: string; value: string } {
         return { key, value: split.join(":") };
     } else return null;
 }
+
+function parseLines(file: string) {
+	return file
+		.split('\n')
+		.map((l) => l.trim().replace('\r', '').split('#')[0] || '')
+		.filter((l) => !l.startsWith('# ') && l.length > 0);
+}
