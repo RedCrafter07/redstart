@@ -39,6 +39,8 @@ mainFile: <path>
 workDir: <path>
 # Important: If you use pullFrom, you need to specify pullFrom on the first line.
 pullFrom: <rawFileURL>
+# You need to specify the line with packages too.
+gitClone: <gitURL>
 ```
 
 ### Important!
