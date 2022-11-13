@@ -5,7 +5,7 @@
  */
 
 import chalk from 'chalk';
-import { existsSync } from "fs";
+import { existsSync, lstatSync } from "fs";
 import { readdir } from 'fs/promises';
 import inquirer from 'inquirer';
 import path, { join } from 'path';
@@ -40,6 +40,34 @@ const { prompt } = inquirer;
         ]);
 
         configPath = path.resolve(process.cwd(), newConf);
+    }
+    if (lstatSync(configPath).isDirectory()) {
+        const configFiles = 
+            (await readdir(configPath, {
+                withFileTypes: true,
+            })).filter((f) => f.isFile() && f.name.endsWith(".rsproj"));
+        
+        if (configFiles.length === 0) {
+            console.log(chalk.redBright('[!] No config file found!'));
+            process.exit(1)
+        }
+        if (configFiles.length === 1) {
+            configPath = join(configPath, configFiles[0].name);
+        } else {
+            const { config: newConf } = await prompt([
+                {
+                    type: "list",
+                    name: "config",
+                    choices: configFiles.map((f) => ({
+                        name: f.name,
+                        value: f.name,
+                    })),
+                },
+            ]);
+
+            configPath = join(configPath, newConf);
+        }
+        
     }
     const { config, modules } = await parseFile(configPath);
     console.log(chalk.yellowBright("[/] Config file parsed successfully!"));
