@@ -175,29 +175,21 @@ const { prompt } = inquirer;
 		),
 	);
 
-	console.log('	- Parsing config file:', parsingTs - startUnix, 'seconds');
+	console.log(`	- Parsing config file: ${parsingTs - startUnix} seconds`);
 
 	if (gitTimestamp && config.gitClone) {
-		console.log(
-			chalk.yellowBright(
-				`	- Git clone time: ${parsingTs - gitTimestamp} seconds`,
-			),
-		);
+		console.log(`	- Git clone time: ${parsingTs - gitTimestamp} seconds`);
 
 		console.log(
-			'	- Initializing main file:',
-			gitTimestamp - parsingTs,
-			'seconds',
+			`	- Initializing main file: ${gitTimestamp - parsingTs} seconds`,
 		);
 	} else
 		console.log(
-			'	- Initializing main file:',
-			fileInitializationTs - parsingTs,
-			'seconds',
+			`	- Initializing main file: ${fileInitializationTs - parsingTs} seconds`,
 		);
 	console.log(
-		'	- Installing packages:',
-		packageInstallationTs - fileInitializationTs,
-		'seconds',
+		`	- Installing packages: ${
+			packageInstallationTs - fileInitializationTs
+		} seconds`,
 	);
 })();
