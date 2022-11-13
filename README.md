@@ -37,6 +37,8 @@ mainFile: <path>
 
 ```rsproj
 workDir: <path>
+# Important: If you use pullFrom, you need to specify pullFrom on the first line.
+pullFrom: <rawFileURL>
 ```
 
 ### Important!
