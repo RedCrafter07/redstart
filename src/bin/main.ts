@@ -6,15 +6,11 @@
 
 import chalk from 'chalk';
 import { existsSync } from "fs";
-import { mkdir, readdir, writeFile, cp, rmdir } from 'fs/promises';
+import { readdir } from 'fs/promises';
 import inquirer from 'inquirer';
-import moment from 'moment';
-import { createSpinner } from 'nanospinner';
-import path, [ join } from 'path';
+import path, { join } from 'path';
 import { argv } from 'process';
-import checkPackageManager from '../lib/checkPackageManager';
 import { parseFile } from '../lib/fileParser';
-import { sync as spawnSync } from 'cross-spawn';
 
 let cwd = process.cwd();
 
