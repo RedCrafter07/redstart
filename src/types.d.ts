@@ -1,3 +1,8 @@
+/**
+ * @license GPL3
+ * @author FishingHacks (https://github.com/FishingHacks)
+ */
+
 export type Config = Record<string, string>;
 export type Cwd = string;
 

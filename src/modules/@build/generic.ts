@@ -1,3 +1,8 @@
+/**
+ * @license GPL3
+ * @author FishingHacks (https://github.com/FishingHacks)
+ */
+
 import chalk from "chalk";
 import { sync as spawnSync } from "cross-spawn";
 import { is } from "../../lib/utils";
@@ -8,14 +13,19 @@ export default {
         return is.set(config.command) && is.str(config.command);
     },
     initiate(config, cwd) {
-        const compile = spawnSync(config.command, parseArguments(config.arguments), { cwd });
-        if (compile.error || compile.status !== 0) console.error(chalk.redBright('[!] Error during build'))
+        const compile = spawnSync(
+            config.command,
+            parseArguments(config.arguments),
+            { cwd }
+        );
+        if (compile.error || compile.status !== 0)
+            console.error(chalk.redBright("[!] Error during build"));
     },
 } as Module;
 
 function parseArguments(arr: string | undefined | null): string[] {
     if (!arr) return [];
-    if (typeof arr !== "string") return []
+    if (typeof arr !== "string") return [];
     const translationMatrix = { n: "\n", r: "\r", t: "\t" };
     const result: string[] = [];
     let escaping = false;
@@ -60,7 +70,7 @@ function parseArguments(arr: string | undefined | null): string[] {
             i++;
         }
     }
-    if (tmp !== "") result.push(tmp)
+    if (tmp !== "") result.push(tmp);
 
     return result;
 }

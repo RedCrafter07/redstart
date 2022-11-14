@@ -1,3 +1,8 @@
+/**
+ * @license GPL3
+ * @author FishingHacks (https://github.com/FishingHacks)
+ */
+
 import { Module } from "../../types";
 import { is } from "../../lib/utils";
 import { sync as spawnSync } from "cross-spawn";

@@ -1,3 +1,8 @@
+/**
+ * @license GPL3
+ * @author FishingHacks (https://github.com/FishingHacks)
+ */
+
 import { createSpinner } from "nanospinner";
 import { sync as spawnSync } from "cross-spawn";
 import { Module } from "../../types";
@@ -35,7 +40,8 @@ export default {
                         cwd,
                     }
                 ).status === 0
-            ) spawnSync("git", ["pull"], { cwd });
+            )
+                spawnSync("git", ["pull"], { cwd });
             await new Promise((r) => setTimeout(r, 1000));
             if (config.branch) {
                 const cmd = "checkout " + config.branch;

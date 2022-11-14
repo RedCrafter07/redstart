@@ -1,3 +1,8 @@
+/**
+ * @license GPL3
+ * @author FishingHacks (https://github.com/FishingHacks)
+ */
+
 import chalk from "chalk";
 import { sync as spawnSync } from "cross-spawn";
 import { existsSync } from "fs";

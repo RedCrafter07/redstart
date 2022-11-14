@@ -1,3 +1,8 @@
+/**
+ * @license GPL3
+ * @author FishingHacks (https://github.com/FishingHacks)
+ */
+
 import { Module } from "../../types";
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import path, { join } from "path";

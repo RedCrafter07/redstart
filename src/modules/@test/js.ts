@@ -1,3 +1,8 @@
+/**
+ * @license GPL3
+ * @author FishingHacks (https://github.com/FishingHacks)
+ */
+
 import { createSpinner } from "nanospinner";
 import { join } from "path";
 import { is } from "../../lib/utils";
@@ -25,8 +30,7 @@ export default {
                 return testspinner.error({ text: "Tests failed!" });
             else if (typeof returnValue === "number" && returnValue !== 0)
                 return testspinner.success({
-                    text:
-                        "Tests completed!"
+                    text: "Tests completed!",
                 });
             else if (typeof returnValue === "number")
                 return testspinner.error({

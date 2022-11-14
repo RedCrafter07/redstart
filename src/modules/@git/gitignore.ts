@@ -1,3 +1,8 @@
+/**
+ * @license GPL3
+ * @author FishingHacks (https://github.com/FishingHacks)
+ */
+
 import chalk from "chalk";
 import { existsSync, writeFileSync } from "fs";
 import { join } from "path";
@@ -8,7 +13,9 @@ export default {
     validate(config, cwd) {
         return (
             is.set(config.language) &&
-            ["javascript", "js", "ts", "typescript", ""].includes(config.language)
+            ["javascript", "js", "ts", "typescript", ""].includes(
+                config.language
+            )
         );
     },
     initiate(config, cwd) {

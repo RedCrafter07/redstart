@@ -1,3 +1,8 @@
+/**
+ * @license GPL3
+ * @author FishingHacks (https://github.com/FishingHacks)
+ */
+
 export const is = {
     exists: (v: any) => v !== undefined,
     set: (v: any) => is.exists(v) && v !== null,
