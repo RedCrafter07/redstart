@@ -81,28 +81,22 @@ export function createTimeTracker(text: string) {
             printFunction = (text, time) => `${text} (${time}s)`;
 
         if (asTextbox) {
-            const textbox = new TextboxBuilder().setTitle("Timings");
-            $internalObj.slices
-                .map(({ text, time }, i) => {
-                    const next =
-                        i === $internalObj.slices.length - 1
-                            ? Date.now()
-                            : $internalObj.slices[i + 1].time;
-                    return !printFunction
-                        ? ""
-                        : printFunction(
-                              text,
-                              ((next - time) / 1000).toFixed(3)
-                          );
+            return createTable<"Name" | "Time">(
+                "Timings",
+                ["Name", "Time"],
+                $internalObj.slices.map(({ text, time }, i) => {
+                    return {
+                        Name: text,
+                        Time:
+                            (
+                                (($internalObj.slices[i + 1]?.time ||
+                                    Date.now()) -
+                                    time) /
+                                1000
+                            ).toFixed(3) + "s",
+                    };
                 })
-                .filter((el) => el.length > 0)
-                .forEach((el) =>
-                    withdivider
-                        ? textbox.addLine(el).addDivider()
-                        : textbox.addLine(el)
-                );
-            if (withdivider) textbox.removeLine();
-            return textbox.build();
+            );
         }
 
         return (
@@ -280,3 +274,103 @@ export class TextboxBuilder {
         }${strMul("─", innerSize - footerSize - (footerSize > 0 ? 4 : 2))}┘`;
     }
 }
+
+function setStrAtPos(str: string, pos: number, char: string) {
+    if (char.length < 1) return str;
+    char = char[0];
+    return str.substring(0, pos) + char + str.substring(pos + 1);
+}
+
+export function createTable<T extends string>(
+    header: string,
+    keys: T[],
+    data: { [Key in T]: string | number | boolean }[],
+    differentiateLines: boolean | undefined = false
+) {
+    const rowKeys = Object.keys(data);
+    if (rowKeys.length < 1 || keys.length < 1) return "┌──┐\n└──┘";
+    const rows = Object.values(data);
+    const columns: { [P in T]?: string[] } = {};
+    for (const c of keys) columns[c] = rows.map((el) => el[c].toString());
+    const columnLengths: { [P in T]?: number } = {};
+    for (const c of keys)
+        columnLengths[c] =
+            columns[c]?.reduce(
+                (a, b) => (a > b.length ? a : b.length),
+                Math.max(columns[c]?.[0].length || 0, c.length)
+            ) || 0;
+    const rowKeysLength = rowKeys.reduce(
+        (a, b) => Math.max(a, b.length),
+        rowKeys[0]?.length || 0
+    );
+    let str = "┌──« " + header + " »──";
+    for (const c of keys)
+        str += strMul(
+            "─",
+            (columnLengths[c] || 0) + 3 - (c === keys[0] ? str.length : 0)
+        );
+    str += "┐\n";
+
+    str += "│ ";
+    for (const c of [...keys]) {
+        str += c;
+        str += strMul(
+            " ",
+            (columnLengths[c as keyof typeof columnLengths] || 1) - c.length
+        );
+        str += " │ ";
+    }
+    str += "\n";
+
+    if (!differentiateLines) {
+        str += "├";
+        for (const c of [...keys]) {
+            str +=
+                strMul(
+                    "─",
+                    (columnLengths[c as keyof typeof columnLengths] || 1) + 2
+                ) + "┼";
+        }
+        str = str.substring(0, str.length - 1);
+        str += "┤\n";
+    }
+
+    for (const i in rowKeys) {
+        if (differentiateLines) {
+            str += "├";
+            for (const c of [...keys]) {
+                str +=
+                    strMul(
+                        "─",
+                        (columnLengths[c as keyof typeof columnLengths] || 1) +
+                            2
+                    ) + "┼";
+            }
+            str = str.substring(0, str.length - 1);
+            str += "┤\n";
+        }
+        str += "│ ";
+        for (const c of keys) {
+            str +=
+                (columns[c]?.[i] || "") +
+                strMul(
+                    " ",
+                    (columnLengths[c] || 0) - (columns[c]?.[i] || "").length
+                ) +
+                " │ ";
+        }
+        str += "\n";
+    }
+    str += "└";
+    for (const c of keys)
+        str += "─" + strMul("─", columnLengths[c] || 0) + "─┴";
+    str = str.substring(0, str.length - 2);
+    str += "─┘";
+
+    return str;
+}
+
+// ┌ ┬ ┐
+// ├ ─ ┤
+// └ ┴ ┘
+// │

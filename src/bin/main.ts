@@ -25,6 +25,7 @@ function inspectPrefixed(prefix: string, args: (string | number | boolean)[]) {
         .split("\n")
         .map((el) => prefix + " " + el)
         .join("\n");
+    
 }
 
 function configureLogForModule(module: string) {
@@ -135,7 +136,6 @@ const { prompt } = inquirer;
     }
     const timeTracker = createTimeTracker("Parsing config file");
     const { config, modules, redstartConfig } = await parseFile(configPath);
-    console.log(redstartConfig);
 
     if (redstartConfig.dbgprint === "true")
         oldConsoleLog(
