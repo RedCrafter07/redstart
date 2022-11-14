@@ -41,7 +41,7 @@ export default {
                 const cmd = "checkout " + config.branch;
                 console.log("'git " + cmd + "'");
                 if (spawnSync("git", ["checkout", config.branch]).status !== 0)
-                    console.log(
+                    console.error(
                         chalk.redBright(
                             "[!] Branch " + config.branch + " not found!"
                         )

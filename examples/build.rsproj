@@ -1,3 +1,4 @@
+-- dbgprint: true
 @install/node, echo, @git/gitignore, @test/js
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 # Modules

@@ -66,3 +66,217 @@ export function escapeString(
     quotes.forEach((el) => (string = string.replaceAll(el, "\\" + el)));
     return string;
 }
+
+export function createTimeTracker(text: string) {
+    const $internalObj = { slices: [{ time: Date.now(), text }] };
+    function addTimeSlice(text: string) {
+        $internalObj.slices.push({ text, time: Date.now() });
+    }
+    function getOutput(
+        asTextbox: boolean | undefined = false,
+        withdivider?: boolean,
+        printFunction?: (text: string, timeInSeconds: string) => string
+    ) {
+        if (!printFunction)
+            printFunction = (text, time) => `${text} (${time}s)`;
+
+        if (asTextbox) {
+            const textbox = new TextboxBuilder().setTitle("Timings");
+            $internalObj.slices
+                .map(({ text, time }, i) => {
+                    const next =
+                        i === $internalObj.slices.length - 1
+                            ? Date.now()
+                            : $internalObj.slices[i + 1].time;
+                    return !printFunction
+                        ? ""
+                        : printFunction(
+                              text,
+                              ((next - time) / 1000).toFixed(3)
+                          );
+                })
+                .filter((el) => el.length > 0)
+                .forEach((el) =>
+                    withdivider
+                        ? textbox.addLine(el).addDivider()
+                        : textbox.addLine(el)
+                );
+            if (withdivider) textbox.removeLine();
+            return textbox.build();
+        }
+
+        return (
+            "Timing:\n" +
+            $internalObj.slices
+                .map(({ text, time }, i) => {
+                    const next =
+                        i === $internalObj.slices.length - 1
+                            ? Date.now()
+                            : $internalObj.slices[i + 1].time;
+                    return !printFunction
+                        ? ""
+                        : printFunction(
+                              text,
+                              ((next - time) / 1000).toFixed(3)
+                          );
+                })
+                .filter((el) => el.length > 0)
+                .join("\n")
+        );
+    }
+    function printOutput(
+        asTextbox?: boolean,
+        withdivider?: boolean,
+        printFunction?: (text: string, timeInSeconds: string) => string
+    ) {
+        console.log(getOutput(asTextbox, withdivider, printFunction));
+    }
+
+    return { printOutput, getOutput, addTimeSlice };
+}
+
+export function strMul(s: string, i: number) {
+    let str = "";
+    for (let j = 0; j < i; j++) str += s;
+    return str;
+}
+
+export function createTextbox(title: string, contents: string) {
+    const lines = contents.split("\n");
+    const innerSize = Math.max(
+        title.length + 2,
+        lines.reduce(
+            (acc, el) =>
+                Math.max(
+                    acc,
+                    el.replaceAll(/\x1B\[[0-9]+(;[0-9]+)*m/g, "").length
+                ),
+            lines[0].length || 0
+        )
+    );
+
+    let textbox = `┌──${title}${strMul("─", innerSize - title.length)}┐\n`;
+    textbox += lines
+        .map(
+            (el) =>
+                `${el.startsWith("─") ? "├─" : "│ "}${el}${strMul(
+                    " ",
+                    innerSize -
+                        el.replaceAll(/\x1B\[[0-9]+(;[0-9]+)*m/g, "").length
+                )}${el.endsWith("─") ? "─┤" : " │"}\n`
+        )
+        .join("");
+    textbox += "└" + strMul("─", innerSize + 2) + "┘";
+
+    return textbox;
+}
+
+export class TextboxBuilder {
+    private title: string = "";
+    private lines: ({ type: "divider" } | string)[] = [];
+    private minLength = 0;
+    private footer: string = "";
+
+    setTitle(title: string) {
+        this.title = title;
+        return this;
+    }
+    setFooter(footer: string) {
+        this.footer = footer;
+        return this;
+    }
+    getFooter() {
+        return this.footer;
+    }
+    addLine(line: string) {
+        if (line.includes("\n")) return this;
+        this.lines.push(line);
+        return this;
+    }
+    addLines(lines: string | string[]) {
+        if (typeof lines === "object") this.lines.push(...lines);
+        else this.lines.push(...lines.split("\n"));
+        return this;
+    }
+    setMinLength(length: number) {
+        this.minLength = length;
+        return this;
+    }
+    getMinLength() {
+        return this.minLength;
+    }
+    addDivider() {
+        this.lines.push({ type: "divider" });
+        return this;
+    }
+    getLines() {
+        return this.lines;
+    }
+    getTitle() {
+        return this.title;
+    }
+    removeLine(last: boolean | undefined = true) {
+        if (last) this.lines.pop();
+        else this.lines.shift();
+        return this;
+    }
+    build() {
+        const stringLines = this.lines.filter(
+            (el) => typeof el === "string"
+        ) as string[];
+        const innerSize = Math.max(
+            this.minLength,
+            this.footer.replaceAll(/\x1B\[[0-9]+(;[0-9]+)*m/g, "").length,
+            this.title.replaceAll(/\x1B\[[0-9]+(;[0-9]+)*m/g, "").length + 2,
+            stringLines.reduce(
+                (acc, el) =>
+                    Math.max(
+                        acc,
+                        el.replaceAll(/\x1B\[[0-9]+(;[0-9]+)*m/g, "").length
+                    ),
+                stringLines[0].length || 0
+            )
+        );
+
+        const buildLines = this.lines
+            .map((el) => {
+                if (typeof el === "string")
+                    return (
+                        el +
+                        strMul(
+                            " ",
+                            innerSize -
+                                el.replaceAll(/\x1B\[[0-9]+(;[0-9]+)*m/g, "")
+                                    .length
+                        )
+                    );
+                else if (el.type === "divider") return strMul("─", innerSize);
+                else return strMul(" ", innerSize);
+            })
+
+            .map(
+                (el) =>
+                    (el.startsWith("─") ? "├─" : "│ ") +
+                    el +
+                    (el.endsWith("─") ? "─┤\n" : " │\n")
+            )
+            .join("");
+        const footerSize = this.footer.replaceAll(
+            /\x1B\[[0-9]+(;[0-9]+)*m/g,
+            ""
+        ).length;
+        const titleSize = this.title.replaceAll(
+            /\x1B\[[0-9]+(;[0-9]+)*m/g,
+            ""
+        ).length;
+
+        return `┌──${titleSize > 0 ? "« " : "─"}${this.title}${
+            titleSize > 0 ? " »" : "─"
+        }${strMul(
+            "─",
+            innerSize - titleSize - (titleSize > 0 ? 4 : 0)
+        )}┐\n${buildLines}└──${footerSize > 0 ? "« " : "─"}${this.footer}${
+            footerSize > 0 ? " »" : "─"
+        }${strMul("─", innerSize - footerSize - (footerSize > 0 ? 4 : 2))}┘`;
+    }
+}

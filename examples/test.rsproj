@@ -1,0 +1,5 @@
+-- dbgprint: true
+@test/js
+
+[@test/js]
+testFile: test.js

@@ -1,3 +1,5 @@
+[<- Back](../index.md)
+
 ## @git/gitignore
 
 Configure the .gitignore file

@@ -1,0 +1,6 @@
+-- dbgprint: true
+@run/node
+
+[@run/node]
+mainFile: src/index.js
+envFile: .env

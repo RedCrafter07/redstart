@@ -1,3 +1,5 @@
+[<- Back](../index.md)
+
 ## @install/node
 
 Install node packages

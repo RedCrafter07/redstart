@@ -1,3 +1,5 @@
+[<- Back](./README.md)
+
 # Contributing
 
 To add a module, put it into [src/modules](./src/modules/). After that, grab the [usage/example file](./usage/example.md) and write the usage of your module into [./usage/<modulename>.md](./usage/). For @install/make, that would be ./usage/@install/make.md. Add the name with the file path to [usage/index](./usage/index.md).

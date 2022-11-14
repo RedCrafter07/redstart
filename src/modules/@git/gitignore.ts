@@ -13,7 +13,7 @@ export default {
     },
     initiate(config, cwd) {
         if (existsSync(join(cwd, ".gitignore")))
-            return console.log(
+            return console.warn(
                 chalk.yellowBright("[/] .gitignore already found. aborting")
             );
         const gitignore = getGitIgnoreForLanguage(config.language);

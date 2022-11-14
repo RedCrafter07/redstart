@@ -1,13 +1,12 @@
 import { Module } from "../../types";
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import path, { join } from "path";
-import { is } from "../../lib/utils";
+import { createTimeTracker, is } from "../../lib/utils";
 import chalk from "chalk";
 import { createSpinner } from "nanospinner";
 import checkPackageManager from "../../lib/checkPackageManager";
 
 import { sync as spawnSync } from "cross-spawn";
-import moment from "moment";
 
 export default {
     validate(config) {
@@ -19,8 +18,9 @@ export default {
             is.set(config.mainFile)
         );
     },
-    async initiate(config, cwd) {
-        const start = moment().unix();
+    async initiate(config, cwd, redstartConfig) {
+        const timeTracker = createTimeTracker("Checking package manger");
+
         console.log(chalk.green(`[/] Using ${config.packageManager}`));
         const pmSpinner = createSpinner("Checking package manager...");
         pmSpinner.start();
@@ -29,6 +29,7 @@ export default {
         );
         if (!isInstalled) {
             pmSpinner.error({ text: "Package manager not installed!" });
+            if (redstartConfig.dbgprint) timeTracker.printOutput(true);
             return;
         }
         pmSpinner.success({ text: "Package manager checked!" });
@@ -37,6 +38,7 @@ export default {
         console.log(chalk.green(`[+] Main file: ${config.mainFile}`));
         const filePath = path.resolve(cwd, config.mainFile);
 
+        timeTracker.addTimeSlice("Creating main file");
         if (!existsSync(filePath)) {
             mkdirSync(join(filePath, ".."), { recursive: true });
             writeFileSync(
@@ -49,7 +51,7 @@ export default {
             .split(",")
             .map((el) => el.trim())
             .filter((el) => el.length > 0);
-        console.log(
+        console.warn(
             chalk.yellow(`[/] Installing packages ${packages.join(", ")}`)
         );
 
@@ -59,11 +61,14 @@ export default {
         const initArgs = `init${packageManager != "pnpm" ? " -y" : ""}`.split(
             " "
         );
+
+        timeTracker.addTimeSlice("Initializing package.json");
         packageSpinner.update({ text: "Initializing package.json" });
         spawnSync(packageManager, initArgs, {
             cwd,
         });
 
+        timeTracker.addTimeSlice("Installing packages");
         packageSpinner.update({ text: "Installing packages" });
         const packageManagerArgs = ["add", ...packages];
         const packageManagerProcess = await spawnSync(
@@ -77,17 +82,13 @@ export default {
         if (packageManagerProcess.status !== 0) {
             packageSpinner.error({ text: "Failed to install packages!" });
 
+            if (redstartConfig.dbgprint) timeTracker.printOutput(true);
             return;
         }
 
         packageSpinner.success({ text: "Packages installed!" });
 
         console.log(chalk.green("[+] Initialized project successfully!"));
-
-        console.log(
-            chalk.yellowBright(
-                `[/] Time taken: ${start - moment().unix()} seconds`
-            )
-        );
+        if (redstartConfig.dbgprint) timeTracker.printOutput(true);
     },
 } as Module;

@@ -17,10 +17,19 @@ export async function read(path: string) {
 
 export async function parseFile(path: string) {
     const file = await read(path);
+    const redstartConfig: Record<string, string> = {};
 
     let lines: string[] = file
         .split("\n")
         .map((l) => l.trim().replace("\r", "").split("#")[0] || "")
+        .map(l => {
+            if (l.startsWith("--")) {
+                const parsed = parseLine(l.substring(2));
+                if (parsed !== null) redstartConfig[parsed.key] = parsed.value;
+                return "";
+            }
+            return l;
+        })
         .filter((l) => !l.startsWith("# ") && l.length > 0);
 
     const modules = lines
@@ -28,7 +37,7 @@ export async function parseFile(path: string) {
         ?.split(",")
         .map((l) => l.trim());
     if (modules === undefined || modules.length < 1) {
-        console.log(chalk.redBright("[!] No modules defined"));
+        console.error(chalk.redBright("[!] No modules defined"));
         process.exit(1);
     }
 
@@ -48,7 +57,7 @@ export async function parseFile(path: string) {
             modules
         )
     ) {
-        console.log(
+        console.error(
             chalk.redBright(
                 "[!] A Config-definition for a non-used module found! (" +
                     moduleRedefinitions
@@ -59,7 +68,7 @@ export async function parseFile(path: string) {
                     ")"
             )
         );
-        return { modules: [], config: {} };
+        return { modules: [], config: {}, redstartConfig };
     }
     const config = moduleRedefinitions.map((el, i) => {
         if (el.index >= lines.length) return { module: el.module, lines: [] };
@@ -76,7 +85,7 @@ export async function parseFile(path: string) {
     const configObj: Record<string, Record<string, string>> = {};
     config.forEach((el) => {
         if (configObj[el.module]) {
-            console.log(
+            console.error(
                 chalk.redBright(
                     "[!] Multiple config-definitions for " + el.module
                 )
@@ -91,6 +100,7 @@ export async function parseFile(path: string) {
     });
 
     return {
+        redstartConfig,
         modules,
         config: configObj,
     };
@@ -98,13 +108,11 @@ export async function parseFile(path: string) {
 
 function parseLine(line: string): null | { key: string; value: string } {
     if (line.includes("\n")) throw new Error("line is not a line");
-    if (line.match(/^([^:]+): *[^\n\r]+$/)) {
+    if (line.match(/^([^:]+): *([^\n\r]+)?$/)) {
         const split = line.split(":");
         const key = split.shift()?.trim();
         if (!key) return null;
-        if (split.length < 1) return null;
-        split[0] = split[0].trimStart();
-        split[split.length - 1] = split[split.length - 1].trimEnd();
-        return { key, value: split.join(":") };
+        if (split.length < 1) return { key, value: "" };
+        return { key, value: split.join(":").trim() };
     } else return null;
 }
