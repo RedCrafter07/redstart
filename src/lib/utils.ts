@@ -1,6 +1,6 @@
 /**
  * @license GPL3
- * @author FishingHacks (https://github.com/FishingHacks)
+ * @author FishingHacks <https://github.com/FishingHacks>
  */
 
 export const is = {

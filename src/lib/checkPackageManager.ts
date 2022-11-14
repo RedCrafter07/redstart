@@ -1,6 +1,6 @@
 /**
  * @license GPL3
- * @author RedCrafter07 (https://github.com/RedCrafter07)
+ * @author RedCrafter07 <https://github.com/RedCrafter07>
  */
 
 import { execSync } from 'child_process';

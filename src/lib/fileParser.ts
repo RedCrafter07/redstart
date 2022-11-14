@@ -1,7 +1,7 @@
 /**
  * @license GPL3
- * @author RedCrafter07 (https://github.com/RedCrafter07)
- * @author FishingHacks (https://github.com/FishingHacks)
+ * @author RedCrafter07 <https://github.com/RedCrafter07>
+ * @author FishingHacks <https://github.com/FishingHacks>
  */
 
 import chalk from 'chalk';
