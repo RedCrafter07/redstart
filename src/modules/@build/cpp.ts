@@ -3,13 +3,13 @@
  * @author FishingHacks (https://github.com/FishingHacks)
  */
 
-import { Module } from "../../types";
-import { is } from "../../lib/utils";
-import { sync as spawnSync } from "cross-spawn";
-import chalk from "chalk";
-import { createSpinner } from "nanospinner";
-import { lstat, mkdir, readdir, readlink } from "fs/promises";
-import { join } from "path";
+import { Module } from '../../types';
+import { is } from '../../lib/utils';
+import { sync as spawnSync } from 'cross-spawn';
+import chalk from 'chalk';
+import { createSpinner } from 'nanospinner';
+import { lstat, mkdir, readdir, readlink } from 'fs/promises';
+import { join } from 'path';
 
 export default {
     validate(config, cwd) {
@@ -21,31 +21,31 @@ export default {
         );
     },
     async initiate(config, cwd) {
-        const getV = spawnSync("gcc", ["-v"]);
+        const getV = spawnSync('gcc', ['-v']);
         if (getV.error || getV.status !== 0)
             return console.error(
-                chalk.redBright("[!] Compiler (" + "gcc" + ") not found")
+                chalk.redBright('[!] Compiler (' + 'gcc' + ') not found')
             );
-        const buildSpinner = createSpinner("Finding files...");
+        const buildSpinner = createSpinner('Finding files...');
         const files = (await tree(join(cwd, config.sourceDirectory))).filter(
             (el) =>
-                el.endsWith(".h") ||
-                el.endsWith(".c") ||
-                el.endsWith(".hpp") ||
-                el.endsWith(".cpp")
+                el.endsWith('.h') ||
+                el.endsWith('.c') ||
+                el.endsWith('.hpp') ||
+                el.endsWith('.cpp')
         );
         if (files.length < 1)
-            return buildSpinner.error({ text: "No files found" });
-        buildSpinner.update({ text: "Compiling..." });
-        const args = ["-o", config.fileName, ...files];
-        if (!config.optimizations) args.unshift("-O1");
+            return buildSpinner.error({ text: 'No files found' });
+        buildSpinner.update({ text: 'Compiling...' });
+        const args = ['-o', config.fileName, ...files];
+        if (!config.optimizations) args.unshift('-O1');
         else if (
-            !["0", "1", "2", "3", "fast", "g", "s"].includes(
+            !['0', '1', '2', '3', 'fast', 'g', 's'].includes(
                 config.optimizations.toLowerCase()
             )
         )
-            args.unshift("-O1");
-        else args.unshift("-O" + config.optimizations.toLowerCase());
+            args.unshift('-O1');
+        else args.unshift('-O' + config.optimizations.toLowerCase());
         if (is.set(config.buildDirectory) && is.str(config.buildDirectory))
             await mkdir(join(cwd, config.buildDirectory), { recursive: true });
         const builddir =
@@ -53,15 +53,15 @@ export default {
                 ? join(cwd, config.buildDirectory)
                 : cwd;
 
-        const compile = spawnSync("gcc", args, { cwd: builddir });
+        const compile = spawnSync('gcc', args, { cwd: builddir });
 
         if (compile.error || compile.status !== 0) {
-            buildSpinner.error({ text: "Compilation failed!" });
+            buildSpinner.error({ text: 'Compilation failed!' });
             return console.log(
                 compile.output
-                    .filter((el) => (el === null ? "" : el))
+                    .filter((el) => (el === null ? '' : el))
                     .map((el) => el?.toString())
-                    .join("\n")
+                    .join('\n')
             );
         }
     },

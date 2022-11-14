@@ -3,10 +3,10 @@
  * @author FishingHacks (https://github.com/FishingHacks)
  */
 
-import chalk from "chalk";
-import { sync as spawnSync } from "cross-spawn";
-import { is } from "../../lib/utils";
-import { Module } from "../../types";
+import chalk from 'chalk';
+import { sync as spawnSync } from 'cross-spawn';
+import { is } from '../../lib/utils';
+import { Module } from '../../types';
 
 export default {
     validate(config, cwd) {
@@ -19,20 +19,20 @@ export default {
             { cwd }
         );
         if (compile.error || compile.status !== 0)
-            console.error(chalk.redBright("[!] Error during build"));
+            console.error(chalk.redBright('[!] Error during build'));
     },
 } as Module;
 
 function parseArguments(arr: string | undefined | null): string[] {
     if (!arr) return [];
-    if (typeof arr !== "string") return [];
-    const translationMatrix = { n: "\n", r: "\r", t: "\t" };
+    if (typeof arr !== 'string') return [];
+    const translationMatrix = { n: '\n', r: '\r', t: '\t' };
     const result: string[] = [];
     let escaping = false;
     let i = 0;
     let in_quotes = false;
     const split = Object.values(arr);
-    let tmp = "";
+    let tmp = '';
     while (i < split.length) {
         const v = split[i];
 
@@ -44,10 +44,10 @@ function parseArguments(arr: string | undefined | null): string[] {
             if (in_quotes) {
                 result.push(tmp);
                 in_quotes = false;
-                tmp = "";
+                tmp = '';
                 i++;
                 if (i < split.length) {
-                    if (split[i] !== " ")
+                    if (split[i] !== ' ')
                         throw new Error(
                             "Expected ' ', found '" + split[i] + "'"
                         );
@@ -56,13 +56,13 @@ function parseArguments(arr: string | undefined | null): string[] {
                 in_quotes = true;
                 i++;
             }
-        } else if (v === "\\") {
+        } else if (v === '\\') {
             escaping = true;
             i++;
-        } else if (!in_quotes && v === " ") {
-            if (tmp !== "") {
+        } else if (!in_quotes && v === ' ') {
+            if (tmp !== '') {
                 result.push(tmp);
-                tmp = "";
+                tmp = '';
             }
             i++;
         } else {
@@ -70,7 +70,7 @@ function parseArguments(arr: string | undefined | null): string[] {
             i++;
         }
     }
-    if (tmp !== "") result.push(tmp);
+    if (tmp !== '') result.push(tmp);
 
     return result;
 }

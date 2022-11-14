@@ -3,13 +3,13 @@
  * @author FishingHacks (https://github.com/FishingHacks)
  */
 
-import chalk from "chalk";
-import { sync as spawnSync } from "cross-spawn";
-import { existsSync } from "fs";
-import { readFile } from "fs/promises";
-import { join } from "path";
-import { is } from "../../lib/utils";
-import { Module } from "../../types";
+import chalk from 'chalk';
+import { sync as spawnSync } from 'cross-spawn';
+import { existsSync } from 'fs';
+import { readFile } from 'fs/promises';
+import { join } from 'path';
+import { is } from '../../lib/utils';
+import { Module } from '../../types';
 
 export default {
     validate(config, cwd) {
@@ -23,33 +23,33 @@ export default {
                     await readFile(join(cwd, config.envFile))
                 ).toString();
                 contents
-                    .split("\n")
+                    .split('\n')
                     .filter((el) => el.length > 0)
                     .forEach((el) => {
-                        additionalEnv[el.split("=")[0].trim()] = el
-                            .split("=")
+                        additionalEnv[el.split('=')[0].trim()] = el
+                            .split('=')
                             .slice(1)
-                            .join("=")
+                            .join('=')
                             .trim();
                     });
             }
         }
         const runProcess = spawnSync(
-            "node",
+            'node',
             [
                 config.mainFile,
-                ...(config.arguments?.split(",").map((el) => el.trim()) || []),
+                ...(config.arguments?.split(',').map((el) => el.trim()) || []),
             ],
             { cwd, env: { ...process.env, ...additionalEnv } }
         );
         if (runProcess.error || runProcess.status !== 0) {
-            console.error(chalk.redBright("[!] Error: Exection failed!"));
+            console.error(chalk.redBright('[!] Error: Exection failed!'));
             return console.error(
                 chalk.redBright(
                     runProcess.output
                         .map((el) => is.set(el))
                         .map((el) => el?.toString())
-                        .join("\n")
+                        .join('\n')
                 )
             );
         }
@@ -57,7 +57,7 @@ export default {
             runProcess.output
                 .filter((el) => is.set(el))
                 .map((el) => el?.toString())
-                .join("\n")
+                .join('\n')
         );
     },
 } as Module;

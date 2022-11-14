@@ -3,9 +3,9 @@
  * @author FishingHacks (https://github.com/FishingHacks)
  */
 
-import chalk from "chalk";
-import { is } from "../lib/utils";
-import { Module } from "../types";
+import chalk from 'chalk';
+import { is } from '../lib/utils';
+import { Module } from '../types';
 
 const translator = {
     red: chalk.redBright,
@@ -23,7 +23,7 @@ export default {
         return (
             is.set(config.message) &&
             is.str(config.message) &&
-            config.message !== ""
+            config.message !== ''
         );
     },
     initiate(config, cwd) {

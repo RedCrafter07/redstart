@@ -6,21 +6,21 @@
 import { execSync } from 'child_process';
 
 export default async function checkPackageManager(
-	packageManager: 'npm' | 'yarn' | 'pnpm',
+    packageManager: 'npm' | 'yarn' | 'pnpm'
 ) {
-	//   check if package manager is installed
+    //   check if package manager is installed
 
-	try {
-		const packageManagerInstalled = await execSync(
-			`${packageManager} --version`,
-		)
-			.toString()
-			.trim();
+    try {
+        const packageManagerInstalled = await execSync(
+            `${packageManager} --version`
+        )
+            .toString()
+            .trim();
 
-		if (packageManagerInstalled) {
-			return true;
-		}
-	} catch (error) {
-		return false;
-	}
+        if (packageManagerInstalled) {
+            return true;
+        }
+    } catch (error) {
+        return false;
+    }
 }

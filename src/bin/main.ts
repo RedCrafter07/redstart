@@ -5,15 +5,15 @@
  * @author FishingHacks (https://github.com/FishingHacks)
  */
 
-import chalk from "chalk";
-import { existsSync, lstatSync } from "fs";
-import { readdir } from "fs/promises";
-import inquirer from "inquirer";
-import path, { join } from "path";
-import { argv } from "process";
-import { parseFile } from "../lib/fileParser";
-import { version } from "../../package.json";
-import { createTimeTracker, TextboxBuilder } from "../lib/utils";
+import chalk from 'chalk';
+import { existsSync, lstatSync } from 'fs';
+import { readdir } from 'fs/promises';
+import inquirer from 'inquirer';
+import path, { join } from 'path';
+import { argv } from 'process';
+import { parseFile } from '../lib/fileParser';
+import { version } from '../../package.json';
+import { createTimeTracker, TextboxBuilder } from '../lib/utils';
 
 const oldConsoleLog = console.log;
 const oldConsoleError = console.error;
@@ -22,25 +22,24 @@ const oldConsoleWarn = console.warn;
 function inspectPrefixed(prefix: string, args: (string | number | boolean)[]) {
     return args
         .map((el) => el.toString())
-        .join(" ")
-        .split("\n")
-        .map((el) => prefix + " " + el)
-        .join("\n");
-    
+        .join(' ')
+        .split('\n')
+        .map((el) => prefix + ' ' + el)
+        .join('\n');
 }
 
 function configureLogForModule(module: string) {
     console.log = (...args) =>
-        oldConsoleLog(inspectPrefixed("[" + module + "]", args));
+        oldConsoleLog(inspectPrefixed('[' + module + ']', args));
     console.info = (...args) =>
-        oldConsoleLog(inspectPrefixed("[" + module + "]", args));
+        oldConsoleLog(inspectPrefixed('[' + module + ']', args));
     console.warn = (...args) =>
         oldConsoleWarn(
-            chalk.yellowBright(inspectPrefixed("[" + module + "]", args))
+            chalk.yellowBright(inspectPrefixed('[' + module + ']', args))
         );
     console.error = (...args) =>
         oldConsoleError(
-            chalk.redBright(inspectPrefixed("[" + module + "]", args))
+            chalk.redBright(inspectPrefixed('[' + module + ']', args))
         );
 }
 
@@ -57,34 +56,38 @@ const { prompt } = inquirer;
 
 (async () => {
     let configPath: string;
-    if (["--h", "-h", "-help", "--help"].includes(args[0])) {
+    if (['--h', '-h', '-help', '--help'].includes(args[0])) {
         return console.log(
             new TextboxBuilder()
-                .setTitle(chalk.blue("Usage"))
+                .setTitle(chalk.blue('Usage'))
                 .addLine(
-                    `${chalk.redBright("redstart")} ${chalk.cyan(
-                        "<file/folder>"
-                    )} ${chalk.greenBright("- Execute a .rsproj file")}`
+                    `${chalk.redBright('redstart')} ${chalk.cyan(
+                        '<file/folder>'
+                    )} ${chalk.greenBright('- Execute a .rsproj file')}`
                 )
                 .addLine(
-                    `${chalk.redBright("redstart")} ${chalk.yellow(
-                        "--help --h -h -help"
-                    )} ${chalk.greenBright("- Obtain usage informations")}`
+                    `${chalk.redBright('redstart')} ${chalk.yellow(
+                        '--help --h -h -help'
+                    )} ${chalk.greenBright('- Obtain usage informations')}`
                 )
                 .addLine(
-                    `${chalk.redBright("redstart")} ${chalk.yellow(
-                        "-v -version --version --v"
+                    `${chalk.redBright('redstart')} ${chalk.yellow(
+                        '-v -version --version --v'
                     )} ${chalk.greenBright(
-                        "- Get the " + chalk.redBright("redstart") + " version"
+                        '- Get the ' + chalk.redBright('redstart') + ' version'
                     )}`
                 )
-                .addLine("")
-                .setFooter(`${chalk.redBright("Redstart")} v${chalk.blueBright(version)}`)
+                .addLine('')
+                .setFooter(
+                    `${chalk.redBright('Redstart')} v${chalk.blueBright(
+                        version
+                    )}`
+                )
                 .build()
         );
     }
-    if (["-v", "-version", "--v", "--version"].includes(args[0])) {
-        return console.log(`${chalk.redBright("Redstart")} v${version}`);
+    if (['-v', '-version', '--v', '--version'].includes(args[0])) {
+        return console.log(`${chalk.redBright('Redstart')} v${version}`);
     }
     if (args[0]) configPath = path.resolve(process.cwd(), args[0]);
     else {
@@ -92,12 +95,12 @@ const { prompt } = inquirer;
             await readdir(process.cwd(), {
                 withFileTypes: true,
             })
-        ).filter((f) => f.isFile() && f.name.endsWith(".rsproj"));
+        ).filter((f) => f.isFile() && f.name.endsWith('.rsproj'));
 
         const { config: newConf } = await prompt([
             {
-                type: "list",
-                name: "config",
+                type: 'list',
+                name: 'config',
                 choices: configFiles.map((f) => ({
                     name: f.name,
                     value: f.name,
@@ -112,10 +115,10 @@ const { prompt } = inquirer;
             await readdir(configPath, {
                 withFileTypes: true,
             })
-        ).filter((f) => f.isFile() && f.name.endsWith(".rsproj"));
+        ).filter((f) => f.isFile() && f.name.endsWith('.rsproj'));
 
         if (configFiles.length === 0) {
-            oldConsoleLog(chalk.redBright("[!] No config file found!"));
+            oldConsoleLog(chalk.redBright('[!] No config file found!'));
             process.exit(1);
         }
         if (configFiles.length === 1) {
@@ -123,8 +126,8 @@ const { prompt } = inquirer;
         } else {
             const { config: newConf } = await prompt([
                 {
-                    type: "list",
-                    name: "config",
+                    type: 'list',
+                    name: 'config',
                     choices: configFiles.map((f) => ({
                         name: f.name,
                         value: f.name,
@@ -135,25 +138,25 @@ const { prompt } = inquirer;
             configPath = join(configPath, newConf);
         }
     }
-    const timeTracker = createTimeTracker("Parsing config file");
+    const timeTracker = createTimeTracker('Parsing config file');
     const { config, modules, redstartConfig } = await parseFile(configPath);
 
-    if (redstartConfig.dbgprint === "true")
+    if (redstartConfig.dbgprint === 'true')
         oldConsoleLog(
-            chalk.yellowBright("[/] Config file parsed successfully!")
+            chalk.yellowBright('[/] Config file parsed successfully!')
         );
-    oldConsoleLog(chalk.green("[+] Using " + modules.join(", ")));
-    const cwd = join(configPath, "..", redstartConfig.cwd || "");
-    if (redstartConfig.dbgprint === "true")
-        oldConsoleLog(chalk.yellowBright("[/] CWD: " + cwd));
+    oldConsoleLog(chalk.green('[+] Using ' + modules.join(', ')));
+    const cwd = join(configPath, '..', redstartConfig.cwd || '');
+    if (redstartConfig.dbgprint === 'true')
+        oldConsoleLog(chalk.yellowBright('[/] CWD: ' + cwd));
 
-    timeTracker.addTimeSlice("Indexing modules");
+    timeTracker.addTimeSlice('Indexing modules');
     const moduleObjects = modules
-        .map((el) => [require.resolve("../modules/" + el), el])
+        .map((el) => [require.resolve('../modules/' + el), el])
         .map((el) => {
             if (!existsSync(el[0])) {
                 oldConsoleLog(
-                    chalk.redBright("[!] Module " + el[1] + " doesn' exist!")
+                    chalk.redBright('[!] Module ' + el[1] + " doesn' exist!")
                 );
                 process.exit(1);
             }
@@ -162,10 +165,10 @@ const { prompt } = inquirer;
         .map((el) => require(el).default);
 
     for (const i in moduleObjects) {
-        timeTracker.addTimeSlice("validating " + modules[i]);
+        timeTracker.addTimeSlice('validating ' + modules[i]);
         const obj = moduleObjects[i];
         if (!obj.validate) {
-            oldConsoleLog(chalk.redBright("[!] Internal Error Code: 1"));
+            oldConsoleLog(chalk.redBright('[!] Internal Error Code: 1'));
             process.exit(1);
         }
         configureLogForModule(modules[i]);
@@ -176,9 +179,9 @@ const { prompt } = inquirer;
             ) {
                 oldConsoleLog(
                     chalk.redBright(
-                        "[!] Validation Failed: " +
+                        '[!] Validation Failed: ' +
                             modules[i] +
-                            " not correctly configured"
+                            ' not correctly configured'
                     )
                 );
                 process.exit(1);
@@ -186,9 +189,9 @@ const { prompt } = inquirer;
         } catch (e) {
             oldConsoleLog(
                 chalk.redBright(
-                    "[!] Validation Failed: " +
+                    '[!] Validation Failed: ' +
                         modules[i] +
-                        " not correctly configured"
+                        ' not correctly configured'
                 )
             );
             oldConsoleError(e);
@@ -197,22 +200,22 @@ const { prompt } = inquirer;
         resetLog();
     }
     for (const i in moduleObjects) {
-        timeTracker.addTimeSlice("initiating " + modules[i]);
+        timeTracker.addTimeSlice('initiating ' + modules[i]);
         const obj = moduleObjects[i];
         if (!obj.initiate) {
-            oldConsoleLog(chalk.redBright("[!] Internal Error Code: 2"));
+            oldConsoleLog(chalk.redBright('[!] Internal Error Code: 2'));
             process.exit(1);
         }
         configureLogForModule(modules[i]);
         try {
             await obj.initiate(config[modules[i]] || {}, cwd, redstartConfig);
             oldConsoleLog(
-                chalk.greenBright("[+] Module " + modules[i] + " finished")
+                chalk.greenBright('[+] Module ' + modules[i] + ' finished')
             );
         } catch (e: any) {
             oldConsoleLog(
                 chalk.redBright(
-                    "[!] Executing of module " + modules[i] + " failed."
+                    '[!] Executing of module ' + modules[i] + ' failed.'
                 )
             );
             oldConsoleLog(e);

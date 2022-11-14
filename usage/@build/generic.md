@@ -8,10 +8,10 @@ Use any build system to build your application.
 
 **Required fields:**
 
-- command
-> The name of the compiler (iex. g++)
+-   command
+    > The name of the compiler (iex. g++)
 
 **Optional Fields:**
 
-- arguments
-> The arguments to be passed to the command
+-   arguments
+    > The arguments to be passed to the command
