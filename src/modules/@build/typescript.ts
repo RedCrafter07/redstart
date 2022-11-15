@@ -11,8 +11,8 @@ export default {
         return true;
     },
     async initiate(config, addTimeSlice, cwd, redstartConfig) {
-        const buildDirectory = join(cwd, config.buildDirectory) || cwd;
-        if (config.sourceDirectory) cwd = join(cwd, config.sourceDirectory);
+        const buildDirectory = join(cwd, config.buildDirectory || "");
+        if (config.sourceDirectory) cwd = join(cwd, config.sourceDirectory || "");
         const tsFilePath = config.tsFile || undefined;
         const allowJSFiles =
             config.allowJSFiles === 'true' ? '--allowJS' : undefined;
