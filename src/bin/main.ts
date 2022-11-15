@@ -7,13 +7,14 @@
 
 import chalk from 'chalk';
 import { existsSync, lstatSync } from 'fs';
-import { readdir } from 'fs/promises';
+import { readdir, readFile } from 'fs/promises';
 import inquirer from 'inquirer';
 import path, { join } from 'path';
 import { argv } from 'process';
 import { parseFile } from '../lib/fileParser';
 import { version } from '../../package.json';
 import { createTimeTracker, TextboxBuilder } from '../lib/utils';
+import markdownToTxt from 'markdown-to-txt';
 
 const oldConsoleLog = console.log;
 const oldConsoleError = console.error;
@@ -50,6 +51,7 @@ function resetLog() {
     console.error = oldConsoleError;
 }
 
+const sourcePath = join(argv[1], '../../');
 const args = argv.slice(2);
 
 const { prompt } = inquirer;
@@ -57,34 +59,99 @@ const { prompt } = inquirer;
 (async () => {
     let configPath: string;
     if (['--h', '-h', '-help', '--help'].includes(args[0])) {
-        return console.log(
-            new TextboxBuilder()
-                .setTitle(chalk.blue('Usage'))
-                .addLine(
-                    `${chalk.redBright('redstart')} ${chalk.cyan(
-                        '<file/folder>'
-                    )} ${chalk.greenBright('- Execute a .rsproj file')}`
+        return new TextboxBuilder()
+            .setTitle(chalk.blue('Usage'))
+            .addLine(
+                `${chalk.redBright('redstart')} ${chalk.cyan(
+                    '<file/folder>'
+                )} ${chalk.greenBright('- Execute a .rsproj file')}`
+            )
+            .addLine(
+                `${chalk.redBright('redstart')} ${chalk.yellow(
+                    '--help --h -h -help'
+                )} ${chalk.greenBright('- Obtain usage informations')}`
+            )
+            .addLine(
+                `${chalk.redBright('redstart')} ${chalk.yellow(
+                    '-v -version --version --v'
+                )} ${chalk.greenBright(
+                    '- Get the ' + chalk.redBright('redstart') + ' version'
+                )}`
+            )
+            .addLine(
+                `${chalk.redBright('redstart')} ${chalk.yellow(
+                    '-m --modules'
+                )} ${chalk.greenBright(
+                    '- Get the avilable modules for redstart'
+                )}`
+            )
+            .addLine(
+                `${chalk.redBright('redstart')} ${chalk.yellow(
+                    '-u --usage'
+                )} ${chalk.cyan('<modulename>')} ${chalk.greenBright(
+                    '- Get the avilable modules for redstart'
+                )}`
+            )
+            .addLine('')
+            .setFooter(
+                `${chalk.redBright('Redstart')} v${chalk.blueBright(version)}`
+            )
+            .log();
+    }
+    if (['-m', '--modules'].includes(args[0])) {
+        const modules = join(sourcePath, 'modules');
+        new TextboxBuilder()
+            .setTitle(chalk.blue('Modules'))
+            .addLines(
+                trimFileEndings(
+                    (await tree(modules)).filter((el) => el.endsWith('.js'))
                 )
-                .addLine(
-                    `${chalk.redBright('redstart')} ${chalk.yellow(
-                        '--help --h -h -help'
-                    )} ${chalk.greenBright('- Obtain usage informations')}`
+            )
+            .setFooter(
+                `${chalk.redBright('Redstart')} v${chalk.blueBright(version)}`
+            )
+            .setMinLength(50)
+            .log();
+        return;
+    }
+    if (['-u', '--usage'].includes(args[0])) {
+        let file = join(sourcePath, '../usage/' + args[1] + '.md');
+        if (!existsSync(file))
+            return console.log(
+                chalk.redBright(
+                    '[!] Error: ' + args[1] + ' is not a valid module'
                 )
-                .addLine(
-                    `${chalk.redBright('redstart')} ${chalk.yellow(
-                        '-v -version --version --v'
-                    )} ${chalk.greenBright(
-                        '- Get the ' + chalk.redBright('redstart') + ' version'
-                    )}`
-                )
-                .addLine('')
-                .setFooter(
-                    `${chalk.redBright('Redstart')} v${chalk.blueBright(
-                        version
-                    )}`
-                )
-                .build()
-        );
+            );
+
+        const lines = markdownToTxt(
+            (await readFile(file))
+                .toString()
+                .replaceAll('[<- Back](../index.md)', '')
+                .replaceAll('# ' + args[1], '')
+                .trimStart()
+                .replaceAll(/^ *> *([^\n]+)/gm, '\x1B[90m   $1')
+                .replaceAll(/^ *- *([^\n]+)/gm, '\n\x1B[36m $1')
+        )
+            .replaceAll('\n\n', '\n')
+            .replace('Usage', '')
+            .replace(
+                'Required Fields:',
+                chalk.bold(chalk.greenBright('\nRequired Fields:'))
+            )
+            .replace(
+                'Optional Fields:',
+                chalk.bold(chalk.greenBright('\nOptional Fields:'))
+            )
+            .split('\n')
+            .map((el) => (el + (el.includes('\x1B') ? '\x1B[39m' : '')));
+        return new TextboxBuilder()
+            .addLines(lines)
+            .setTitle(chalk.yellow(args[1]))
+            .setFooter(
+                `${chalk.redBright('Redstart')} v${chalk.blueBright(version)}`
+            )
+            .setMinLength(50)
+            .log();
     }
     if (['-v', '-version', '--v', '--version'].includes(args[0])) {
         return console.log(`${chalk.redBright('Redstart')} v${version}`);
@@ -234,3 +301,32 @@ const { prompt } = inquirer;
     }
     if (redstartConfig.dbgprint === 'true') timeTracker.printOutput(true);
 })();
+
+async function tree(dir: string) {
+    const entries: string[] = [];
+    const toScan: string[] = [dir];
+
+    while (toScan.length > 0) {
+        const directory = toScan.pop();
+        if (!directory) break;
+
+        for (const f of await readdir(directory, { withFileTypes: true })) {
+            if (f.isFile()) entries.push(join(directory, f.name));
+            else if (f.isDirectory()) toScan.push(join(directory, f.name));
+        }
+    }
+
+    if (toScan.length > 0)
+        throw new Error(
+            "Entries left, this should never happen. It's likely a bug in the runtime, path module or fs module"
+        );
+    return entries
+        .map((el) =>
+            el.replace(dir.replaceAll('/', path.sep), '').replaceAll('\\', '/')
+        )
+        .map((el) => (el[0] === '/' ? el.substring(1) : el));
+}
+
+function trimFileEndings(files: string[]): string[] {
+    return files.map((el) => el.split('.').slice(0, -1).join('.'));
+}

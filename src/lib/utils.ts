@@ -313,6 +313,9 @@ export class TextboxBuilder {
             footerSize > 0 ? ' »' : '─'
         }${strMul('─', innerSize - footerSize - (footerSize > 0 ? 4 : 2))}┘`;
     }
+    log() {
+        return console.log(this.build());
+    }
 }
 
 function setStrAtPos(str: string, pos: number, char: string) {
