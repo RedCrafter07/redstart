@@ -18,7 +18,7 @@ export default {
             )
         );
     },
-    initiate(config, cwd) {
+    initiate(config, _addTimeSlice, cwd) {
         if (existsSync(join(cwd, '.gitignore')))
             return console.warn(
                 chalk.yellowBright('[/] .gitignore already found. aborting')

@@ -18,6 +18,8 @@ export const is = {
             return false;
         }
     },
+    processError: (v: { error?: Error; status: number | null }) =>
+        v.error || v.status !== 0,
 };
 
 export function deepEqual(obj1: any, obj2: any) {
@@ -49,15 +51,26 @@ export function arrEq(
     arr1: Array<string | number | bigint | boolean>,
     arr2: Array<string | number | bigint | boolean>
 ): boolean {
-    for (const i in arr1) {
-        if (arr2[i] !== arr1[i]) return false;
+    for (const v of arr1) {
+        if (!arr2.includes(v)) return false;
     }
 
-    for (const i in arr2) {
-        if (arr2[i] !== arr1[i]) return false;
+    for (const v of arr2) {
+        if (!arr1.includes(v)) return false;
     }
 
     return true;
+}
+
+export function uniqueEntries(arr: Array<any>) {
+    let _arr: any[] = [];
+    return arr.filter((el) => {
+        if (_arr.includes(el)) return false;
+        else {
+            _arr.push(el);
+            return true;
+        }
+    });
 }
 
 export function escapeString(
@@ -73,35 +86,58 @@ export function escapeString(
 }
 
 export function createTimeTracker(text: string) {
-    const $internalObj = { slices: [{ time: Date.now(), text }] };
+    const $internalObj = {
+        slices: [{ time: Date.now(), text }],
+        start: Date.now(),
+    };
     function addTimeSlice(text: string) {
         $internalObj.slices.push({ text, time: Date.now() });
     }
     function getOutput(
-        asTextbox: boolean | undefined = false,
-        withdivider?: boolean,
+        asTable: boolean | undefined = false,
         printFunction?: (text: string, timeInSeconds: string) => string
     ) {
         if (!printFunction)
             printFunction = (text, time) => `${text} (${time}s)`;
 
-        if (asTextbox) {
-            return createTable<'Name' | 'Time'>(
-                'Timings',
-                ['Name', 'Time'],
-                $internalObj.slices.map(({ text, time }, i) => {
-                    return {
-                        Name: text,
-                        Time:
-                            (
-                                (($internalObj.slices[i + 1]?.time ||
-                                    Date.now()) -
-                                    time) /
-                                1000
-                            ).toFixed(3) + 's',
-                    };
-                })
-            );
+        if (asTable) {
+            const maxArg = {
+                Name: 'Time Taken',
+                Time: (Date.now() - $internalObj.start).toFixed(3) + 's',
+                Start: new Date($internalObj.start).toLocaleTimeString(),
+            };
+            const args = $internalObj.slices.map(({ text, time }, i) => {
+                return {
+                    Name: text,
+                    Time:
+                        (
+                            (($internalObj.slices[i + 1]?.time || Date.now()) -
+                                time) /
+                            1000
+                        ).toFixed(3) + 's',
+                    Start: new Date(time).toLocaleTimeString(),
+                };
+            });
+
+            const maxLengths = {
+                Name: maxArg.Name.length,
+                Time: maxArg.Time.length,
+                Start: maxArg.Start.length,
+            };
+            for (const { Name, Start, Time } of args) {
+                maxLengths.Name = Math.max(Name.length, maxLengths.Name);
+                maxLengths.Start = Math.max(Start.length, maxLengths.Start);
+                maxLengths.Time = Math.max(Time.length, maxLengths.Time);
+            }
+
+            args.push({
+                Name: strMul('─', maxLengths.Name),
+                Start: strMul('─', maxLengths.Start),
+                Time: strMul('─', maxLengths.Time),
+            });
+            args.push(maxArg);
+
+            return createTable('Timings', ['Name', 'Time', 'Start'], args);
         }
 
         return (
@@ -124,11 +160,10 @@ export function createTimeTracker(text: string) {
         );
     }
     function printOutput(
-        asTextbox?: boolean,
-        withdivider?: boolean,
+        asTable?: boolean,
         printFunction?: (text: string, timeInSeconds: string) => string
     ) {
-        console.log(getOutput(asTextbox, withdivider, printFunction));
+        console.log(getOutput(asTable, printFunction));
     }
 
     return { printOutput, getOutput, addTimeSlice };
@@ -304,10 +339,6 @@ export function createTable<T extends string>(
                 (a, b) => (a > b.length ? a : b.length),
                 Math.max(columns[c]?.[0].length || 0, c.length)
             ) || 0;
-    const rowKeysLength = rowKeys.reduce(
-        (a, b) => Math.max(a, b.length),
-        rowKeys[0]?.length || 0
-    );
     let str = '┌──« ' + header + ' »──';
     for (const c of keys)
         str += strMul(
@@ -315,26 +346,25 @@ export function createTable<T extends string>(
             (columnLengths[c] || 0) + 3 - (c === keys[0] ? str.length : 0)
         );
     str += '┐\n';
+    let i = 0;
+    for (const c of keys) {
+        const length = columnLengths[c];
+        if (str[i] === '─') str = setStrAtPos(str, i, '┬');
+        i += 3 + (length || 0);
+    }
 
     str += '│ ';
-    for (const c of [...keys]) {
+    for (const c of keys) {
         str += c;
-        str += strMul(
-            ' ',
-            (columnLengths[c as keyof typeof columnLengths] || 1) - c.length
-        );
+        str += strMul(' ', (columnLengths[c] || 1) - c.length);
         str += ' │ ';
     }
     str += '\n';
 
     if (!differentiateLines) {
         str += '├';
-        for (const c of [...keys]) {
-            str +=
-                strMul(
-                    '─',
-                    (columnLengths[c as keyof typeof columnLengths] || 1) + 2
-                ) + '┼';
+        for (const c of keys) {
+            str += strMul('─', (columnLengths[c] || 1) + 2) + '┼';
         }
         str = str.substring(0, str.length - 1);
         str += '┤\n';
@@ -343,26 +373,29 @@ export function createTable<T extends string>(
     for (const i in rowKeys) {
         if (differentiateLines) {
             str += '├';
-            for (const c of [...keys]) {
-                str +=
-                    strMul(
-                        '─',
-                        (columnLengths[c as keyof typeof columnLengths] || 1) +
-                            2
-                    ) + '┼';
+            for (const c of keys) {
+                str += strMul('─', (columnLengths[c] || 1) + 2) + '┼';
             }
             str = str.substring(0, str.length - 1);
             str += '┤\n';
         }
-        str += '│ ';
-        for (const c of keys) {
+        str += columns[keys[0]]?.[i].startsWith('─') ? '├─' : '│ ';
+        for (const j in keys) {
+            const c = keys[j];
             str +=
                 (columns[c]?.[i] || '') +
                 strMul(
                     ' ',
                     (columnLengths[c] || 0) - (columns[c]?.[i] || '').length
                 ) +
-                ' │ ';
+                `${resolveDelimiter(
+                    columns[c]?.[i],
+                    columns[keys[Number(j) + 1]]?.[
+                        j === (keys.length - 1).toString()
+                            ? Number(i) + 1
+                            : Number(i)
+                    ]
+                )}`;
         }
         str += '\n';
     }
@@ -373,6 +406,15 @@ export function createTable<T extends string>(
     str += '─┘';
 
     return str;
+}
+
+function resolveDelimiter(a: string | undefined, b: string | undefined) {
+    let str = '';
+    if (a?.endsWith('─')) str = '─┤';
+    else str += ' │';
+
+    if (b?.startsWith('─')) return str[0] + (str[1] === '│' ? '├─' : '┼─');
+    else return str + ' ';
 }
 
 // ┌ ┬ ┐

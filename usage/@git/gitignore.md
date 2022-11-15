@@ -6,7 +6,7 @@ Configure the .gitignore file
 
 ### Usage
 
-**Required fields:**
+**Required Fields:**
 
 -   language
     > The language you intent on writing your program in. It will select the preset for the language. Leave empty to use none

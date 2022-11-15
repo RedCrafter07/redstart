@@ -12,10 +12,10 @@ import { is } from '../../lib/utils';
 import { Module } from '../../types';
 
 export default {
-    validate(config, cwd) {
+    validate(config, _cwd) {
         return is.set(config.mainFile) && is.str(config.mainFile);
     },
-    async initiate(config, cwd) {
+    async initiate(config, _addTimeSlice, cwd) {
         let additionalEnv: Record<string, string> = {};
         if (is.set(config.envFile) && is.str(config.envFile)) {
             if (existsSync(join(cwd, config.envFile))) {

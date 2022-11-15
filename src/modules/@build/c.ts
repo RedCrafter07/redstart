@@ -20,18 +20,21 @@ export default {
             is.str(config.sourceDirectory)
         );
     },
-    async initiate(config, cwd) {
+    async initiate(config, addTimeSlice, cwd) {
+        addTimeSlice("Checking for gcc");
         const getV = spawnSync('gcc', ['-v']);
         if (getV.error || getV.status !== 0)
             return console.error(
                 chalk.redBright('[!] Compiler (' + 'gcc' + ') not found')
             );
+        addTimeSlice("Finding files");
         const buildSpinner = createSpinner('Finding files...');
         const files = (await tree(join(cwd, config.sourceDirectory))).filter(
             (el) => el.endsWith('.h') || el.endsWith('.c')
         );
         if (files.length < 1)
             return buildSpinner.error({ text: 'No files found' });
+        addTimeSlice("Compiling")
         buildSpinner.update({ text: 'Compiling...' });
         const args = ['-o', config.fileName, ...files];
         if (!config.optimizations) args.unshift('-O1');

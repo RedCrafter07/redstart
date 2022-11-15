@@ -9,14 +9,14 @@ import { is } from '../../lib/utils';
 import { Module } from '../../types';
 
 export default {
-    validate(config, cwd) {
+    validate(config, _cwd) {
         return (
             is.set(config.testfile) &&
             (config.testfile.endsWith('.mjs') ||
                 config.testfile.endsWith('.js'))
         );
     },
-    initiate(config, cwd) {
+    initiate(config, _addTimeSlice, cwd) {
         const testspinner = createSpinner('Loading testfile...');
         try {
             let test = require(join(cwd, config.testfile));

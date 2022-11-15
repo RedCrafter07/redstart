@@ -12,7 +12,7 @@ export default {
     validate(config, cwd) {
         return is.set(config.command) && is.str(config.command);
     },
-    initiate(config, cwd) {
+    initiate(config, addTimeSlice, cwd) {
         const compile = spawnSync(
             config.command,
             parseArguments(config.arguments),

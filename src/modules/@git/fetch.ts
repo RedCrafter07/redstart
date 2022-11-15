@@ -11,7 +11,8 @@ import { is } from '../../lib/utils';
 
 export default {
     validate: (config, cwd) => is.set(config.repository),
-    async initiate(config, cwd) {
+    async initiate(config, addTimeSlice, cwd) {
+        addTimeSlice('Checking git');
         const gitSpinner = createSpinner('Checking git...');
         gitSpinner.start();
         if (await spawnSync('git', ['-v'], { cwd }).error) {
@@ -21,6 +22,7 @@ export default {
                 cwd,
             });
             if (remote.status !== 0) {
+                addTimeSlice('Initializing repository');
                 gitSpinner.update({ text: 'Initializing repository' });
                 await spawnSync('git', ['init'], { cwd });
             }
@@ -31,6 +33,7 @@ export default {
                 return gitSpinner.error({
                     text: "[!] Error: Couldn't initialize git Repository",
                 });
+            addTimeSlice('Fetching repository');
             gitSpinner.update({ text: 'Fetching repository' });
             if (
                 spawnSync(

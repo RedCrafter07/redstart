@@ -6,7 +6,7 @@ Fetch a remote repository
 
 ### Usage
 
-**Required fields:**
+**Required Fields:**
 
 -   repository
     > The URL of the git repository

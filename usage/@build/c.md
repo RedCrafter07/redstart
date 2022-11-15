@@ -6,7 +6,7 @@ Compile your c-program
 
 ### Usage
 
-**Required fields:**
+**Required Fields:**
 
 -   fileName
 

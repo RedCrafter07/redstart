@@ -20,12 +20,14 @@ export default {
             is.str(config.sourceDirectory)
         );
     },
-    async initiate(config, cwd) {
-        const getV = spawnSync('gcc', ['-v']);
+    async initiate(config, addTimeSlice, cwd) {
+        addTimeSlice('Checking g++');
+        const getV = spawnSync('g++', ['-v']);
         if (getV.error || getV.status !== 0)
             return console.error(
-                chalk.redBright('[!] Compiler (' + 'gcc' + ') not found')
+                chalk.redBright('[!] Compiler (' + 'g++' + ') not found')
             );
+        addTimeSlice('Finding Files');
         const buildSpinner = createSpinner('Finding files...');
         const files = (await tree(join(cwd, config.sourceDirectory))).filter(
             (el) =>
@@ -36,6 +38,7 @@ export default {
         );
         if (files.length < 1)
             return buildSpinner.error({ text: 'No files found' });
+        addTimeSlice('Compiling');
         buildSpinner.update({ text: 'Compiling...' });
         const args = ['-o', config.fileName, ...files];
         if (!config.optimizations) args.unshift('-O1');
@@ -53,7 +56,7 @@ export default {
                 ? join(cwd, config.buildDirectory)
                 : cwd;
 
-        const compile = spawnSync('gcc', args, { cwd: builddir });
+        const compile = spawnSync('g++', args, { cwd: builddir });
 
         if (compile.error || compile.status !== 0) {
             buildSpinner.error({ text: 'Compilation failed!' });

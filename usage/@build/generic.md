@@ -6,7 +6,7 @@ Use any build system to build your application.
 
 ### Usage
 
-**Required fields:**
+**Required Fields:**
 
 -   command
     > The name of the compiler (iex. g++)

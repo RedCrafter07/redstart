@@ -19,14 +19,14 @@ const translator = {
 };
 
 export default {
-    validate(config, cwd) {
+    validate(config) {
         return (
             is.set(config.message) &&
             is.str(config.message) &&
             config.message !== ''
         );
     },
-    initiate(config, cwd) {
+    initiate(config) {
         if (config.color && Object.keys(translator).includes(config.color))
             return console.log(
                 translator[config.color as keyof typeof translator](

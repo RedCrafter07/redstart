@@ -6,7 +6,7 @@ Install node packages
 
 ### Usage
 
-**Required fields:**
+**Required Fields:**
 
 -   packages
 
@@ -22,7 +22,3 @@ Install node packages
 
 -   mainFile
     > The main file of your program
-
-**Optional Fields:**
-
-None

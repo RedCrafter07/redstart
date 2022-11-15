@@ -6,7 +6,7 @@
 
 import chalk from 'chalk';
 import { readFile } from 'fs/promises';
-import { arrEq, escapeString } from '../lib/utils';
+import { arrEq, escapeString, uniqueEntries } from '../lib/utils';
 
 const cwd = process.cwd();
 
@@ -53,8 +53,8 @@ export async function parseFile(path: string) {
     );
     if (
         !arrEq(
-            moduleRedefinitions.map((el) => el.module),
-            modules
+            uniqueEntries(moduleRedefinitions.map((el) => el.module)),
+            uniqueEntries(modules)
         )
     ) {
         console.error(
@@ -82,21 +82,14 @@ export async function parseFile(path: string) {
                 .map(parseLine),
         };
     });
-    const configObj: Record<string, Record<string, string>> = {};
+    const configObj: Record<string, Record<string, string>[]> = {};
     config.forEach((el) => {
-        if (configObj[el.module]) {
-            console.error(
-                chalk.redBright(
-                    '[!] Multiple config-definitions for ' + el.module
-                )
-            );
-            process.exit(1);
-        }
         const moduleConfObj: Record<string, string> = {};
         el.config?.forEach((el) =>
             !el ? null : (moduleConfObj[el.key] = el?.value)
         );
-        configObj[el.module] = moduleConfObj;
+        if (!configObj[el.module]) configObj[el.module] = [];
+        configObj[el.module].push(moduleConfObj);
     });
 
     return {

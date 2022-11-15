@@ -6,7 +6,7 @@ Run your node application
 
 ### Usage
 
-**Required fields:**
+**Required Fields:**
 
 -   mainFile
     > The mainfile. It is the first one, that get's executed

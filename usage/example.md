@@ -6,7 +6,7 @@ description
 
 ### Usage
 
-**Required fields:**
+**Required Fields:**
 
 -   1\. required field
     > Description line 1
@@ -15,4 +15,7 @@ description
 
 **Optional Fields:**
 
-None
+-   1\. optional field
+    > Description line 1
+    >
+    > Description line 2

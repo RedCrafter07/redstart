@@ -1,6 +1,13 @@
 -- dbgprint: true
-@run/node
+@run/node, echo
+
+[echo]
+message: Running src/index.js
 
 [@run/node]
 mainFile: src/index.js
 envFile: .env
+
+[echo]
+message: Finished running src/index.js
+color: aqua

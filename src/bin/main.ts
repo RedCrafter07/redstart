@@ -172,11 +172,19 @@ const { prompt } = inquirer;
             process.exit(1);
         }
         configureLogForModule(modules[i]);
-        try {
-            if (
-                !(await obj.validate(config[modules[i]] || {}, cwd),
-                redstartConfig)
-            ) {
+        for (const c of config[modules[i]] || []) {
+            try {
+                if (!(await obj.validate(c, cwd), redstartConfig)) {
+                    oldConsoleLog(
+                        chalk.redBright(
+                            '[!] Validation Failed: ' +
+                                modules[i] +
+                                ' not correctly configured'
+                        )
+                    );
+                    process.exit(1);
+                }
+            } catch (e) {
                 oldConsoleLog(
                     chalk.redBright(
                         '[!] Validation Failed: ' +
@@ -184,21 +192,17 @@ const { prompt } = inquirer;
                             ' not correctly configured'
                     )
                 );
+                oldConsoleError(e);
                 process.exit(1);
             }
-        } catch (e) {
-            oldConsoleLog(
-                chalk.redBright(
-                    '[!] Validation Failed: ' +
-                        modules[i] +
-                        ' not correctly configured'
-                )
-            );
-            oldConsoleError(e);
-            process.exit(1);
         }
         resetLog();
     }
+
+    function addTimeSlice(str: string) {
+        return timeTracker.addTimeSlice('╰─« ' + str);
+    }
+
     for (const i in moduleObjects) {
         timeTracker.addTimeSlice('initiating ' + modules[i]);
         const obj = moduleObjects[i];
@@ -207,21 +211,26 @@ const { prompt } = inquirer;
             process.exit(1);
         }
         configureLogForModule(modules[i]);
-        try {
-            await obj.initiate(config[modules[i]] || {}, cwd, redstartConfig);
-            oldConsoleLog(
-                chalk.greenBright('[+] Module ' + modules[i] + ' finished')
-            );
-        } catch (e: any) {
-            oldConsoleLog(
-                chalk.redBright(
-                    '[!] Executing of module ' + modules[i] + ' failed.'
-                )
-            );
-            oldConsoleLog(e);
-            process.exit(1);
+        for (const c of config[modules[i]] || []) {
+            try {
+                await obj.initiate(c, addTimeSlice, cwd, redstartConfig);
+                if (redstartConfig.dbgprint === 'true')
+                    oldConsoleLog(
+                        chalk.greenBright(
+                            '[+] Module ' + modules[i] + ' finished'
+                        )
+                    );
+            } catch (e: any) {
+                oldConsoleLog(
+                    chalk.redBright(
+                        '[!] Executing of module ' + modules[i] + ' failed.'
+                    )
+                );
+                oldConsoleLog(e);
+                process.exit(1);
+            }
         }
         resetLog();
     }
-    if (redstartConfig.dbgprint) timeTracker.printOutput(true);
+    if (redstartConfig.dbgprint === 'true') timeTracker.printOutput(true);
 })();
