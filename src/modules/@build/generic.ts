@@ -20,6 +20,7 @@ export default {
         );
         if (compile.error || compile.status !== 0)
             console.error(chalk.redBright('[!] Error during build'));
+        console.error(compile.output.filter(el => el !== null).join("\n"));
     },
 } as Module;
 

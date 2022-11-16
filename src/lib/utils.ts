@@ -103,7 +103,7 @@ export function createTimeTracker(text: string) {
         if (asTable) {
             const maxArg = {
                 Name: 'Time Taken',
-                Time: (Date.now() - $internalObj.start).toFixed(3) + 's',
+                Time: ((Date.now() - $internalObj.start)/1000).toFixed(3) + 's',
                 Start: new Date($internalObj.start).toLocaleTimeString(),
             };
             const args = $internalObj.slices.map(({ text, time }, i) => {
