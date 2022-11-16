@@ -36,6 +36,8 @@ You start the config by putting the module name in Square Brackets. After that, 
 Syntax:
 
 ```
+--redstartConfigVariable: value
+--dbgprint: true
 # ...modules
 echo, @install/node
 
@@ -49,6 +51,8 @@ mainFile: main.ts
 language: ts,
 packageManager: pnpm
 ```
+
+**Note**: To configure redstart, put -- at the start of the key. Refer to the [Redstart Global Configuration Reference](./usage/redstartGlobalConfig.md) for the usage.
 
 ### Important!
 

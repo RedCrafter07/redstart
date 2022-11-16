@@ -11,8 +11,9 @@ export default {
         return true;
     },
     async initiate(config, addTimeSlice, cwd, redstartConfig) {
-        const buildDirectory = join(cwd, config.buildDirectory || "");
-        if (config.sourceDirectory) cwd = join(cwd, config.sourceDirectory || "");
+        const buildDirectory = join(cwd, config.buildDirectory || '');
+        if (config.sourceDirectory)
+            cwd = join(cwd, config.sourceDirectory || '');
         const tsFilePath = config.tsFile || undefined;
         const allowJSFiles =
             config.allowJSFiles === 'true' ? '--allowJS' : undefined;
@@ -36,7 +37,7 @@ export default {
             buildDirectory,
             allowJSFiles,
             '--pretty',
-            ...(await tree(cwd)),
+            ...(await (await tree(cwd)).filter((el) => el.endsWith('.ts'))),
         ].filter((el) => el !== undefined) as string[];
         addTimeSlice('Running tsc ');
         if (redstartConfig.dbgprint === 'true')
