@@ -8,6 +8,6 @@ export default {
     initiate: () => {
         if (is.processError(sync('tsc', ['--init'])))
             console.error(chalk.redBright('[!] TSC is not installed'));
-        else console.log(chalk.greenBright('[+] Installed chalk'));
+        else console.log(chalk.greenBright('[+] Initialized typescript'));
     },
 } as Module;
