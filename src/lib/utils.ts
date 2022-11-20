@@ -1,3 +1,5 @@
+import { createSpinner as _createSpinner } from "nanospinner";
+
 /**
  * @license GPL3
  * @author FishingHacks <https://github.com/FishingHacks>
@@ -424,3 +426,13 @@ function resolveDelimiter(a: string | undefined, b: string | undefined) {
 // ├ ─ ┤
 // └ ┴ ┘
 // │
+
+
+export function createSpinner(message: string) {
+    const sp = _createSpinner(message);
+    sp.error = (opts?: {
+        text?: string | undefined;
+        mark?: string | undefined;
+    } | undefined) => {throw new Error(opts?.text || "Error")};
+    return sp;
+}

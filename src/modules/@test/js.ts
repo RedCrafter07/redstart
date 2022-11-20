@@ -3,9 +3,8 @@
  * @author FishingHacks <https://github.com/FishingHacks>
  */
 
-import { createSpinner } from 'nanospinner';
 import { join } from 'path';
-import { is } from '../../lib/utils';
+import { is, createSpinner } from '../../lib/utils';
 import { Module } from '../../types';
 
 export default {
@@ -28,7 +27,7 @@ export default {
                 return testspinner.success({ text: 'Tests completed!' });
             else if (returnValue === false)
                 return testspinner.error({ text: 'Tests failed!' });
-            else if (typeof returnValue === 'number' && returnValue !== 0)
+            else if (typeof returnValue === 'number' && returnValue === 0)
                 return testspinner.success({
                     text: 'Tests completed!',
                 });

@@ -1,5 +1,9 @@
+--stoponerr: true
 -- dbgprint: true
-@test/js
+@test/js, echo
 
 [@test/js]
 testfile: test.js
+
+[echo]
+message: Hi!

@@ -6,9 +6,8 @@
 import { Module } from '../../types';
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import path, { join } from 'path';
-import { is } from '../../lib/utils';
+import { is, createSpinner } from '../../lib/utils';
 import chalk from 'chalk';
-import { createSpinner } from 'nanospinner';
 import checkPackageManager from '../../lib/checkPackageManager';
 
 import { sync as spawnSync } from 'cross-spawn';
