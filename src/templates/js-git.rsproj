@@ -1,0 +1,13 @@
+packages|packageManager|repo|branch|gitignore template
+@install/node, @git/fetch, @git/ignore
+
+[@install/node]
+packages: {packages}
+packageManager: {packageManager}
+
+[@git/fetch]
+repository: {repo}
+branch: {branch}
+
+[@git/gignore]
+language: {gitignore template}

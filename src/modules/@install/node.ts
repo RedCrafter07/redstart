@@ -4,8 +4,6 @@
  */
 
 import { Module } from '../../types';
-import { existsSync, mkdirSync, writeFileSync } from 'fs';
-import path, { join } from 'path';
 import { is } from '../../lib/utils';
 import chalk from 'chalk';
 import { createSpinner } from 'nanospinner';
@@ -17,10 +15,8 @@ export default {
     validate(config) {
         return (
             is.set(config.packages) &&
-            is.set(config.language) &&
             is.set(config.packageManager) &&
-            ['yarn', 'pnpm', 'npm'].includes(config.packageManager) &&
-            is.set(config.mainFile)
+            ['yarn', 'pnpm', 'npm'].includes(config.packageManager)
         );
     },
     async initiate(config, addTimeSlice, cwd, redstartConfig) {
@@ -37,19 +33,6 @@ export default {
             return;
         }
         pmSpinner.success({ text: 'Package manager checked!' });
-
-        console.log(chalk.green(`[+] Using ${config.language}`));
-        console.log(chalk.green(`[+] Main file: ${config.mainFile}`));
-        const filePath = path.resolve(cwd, config.mainFile);
-
-        addTimeSlice('Creating main file');
-        if (!existsSync(filePath)) {
-            mkdirSync(join(filePath, '..'), { recursive: true });
-            writeFileSync(
-                filePath,
-                'function main() {\n    console.log("Hello, World!");\n\n    return 0;\n}\n\ntry {\n    const exitCode = main();\n    process.exit(exitCode || 0);\n} catch (e) {\n    console.error("[!] Error:");\n    console.error(e);\n    process.exit(1);\n}'
-            );
-        }
 
         const packages = config.packages
             .split(',')

@@ -6,8 +6,8 @@
  */
 
 import chalk from 'chalk';
-import { existsSync, lstatSync } from 'fs';
-import { readdir, readFile } from 'fs/promises';
+import { existsSync, lstatSync, readdirSync, readFileSync } from 'fs';
+import { readdir, readFile, writeFile } from 'fs/promises';
 import inquirer from 'inquirer';
 import path, { join } from 'path';
 import { argv } from 'process';
@@ -15,6 +15,7 @@ import { parseFile } from '../lib/fileParser';
 import { version } from '../../package.json';
 import { createTimeTracker, TextboxBuilder } from '../lib/utils';
 import markdownToTxt from 'markdown-to-txt';
+import parseTemplate from '../lib/templateParser';
 
 const oldConsoleLog = console.log;
 const oldConsoleError = console.error;
@@ -92,6 +93,20 @@ const { prompt } = inquirer;
                     '- Get the avilable modules for redstart'
                 )}`
             )
+            .addLine(
+                `${chalk.redBright('redstart')} ${chalk.yellow(
+                    '-i --init'
+                )} ${chalk.greenBright(
+                    ' - Initialize redstart with a template'
+                )}`
+            )
+            .addLine(
+                `${chalk.redBright('redstart')} ${chalk.yellow(
+                    '-t --template'
+                )} ${chalk.greenBright(
+                    ' - Initialize redstart with a template'
+                )}`
+            )
             .addLine('')
             .setFooter(
                 `${chalk.redBright('Redstart')} v${chalk.blueBright(version)}`
@@ -143,7 +158,7 @@ const { prompt } = inquirer;
                 chalk.bold(chalk.greenBright('\nOptional Fields:'))
             )
             .split('\n')
-            .map((el) => (el + (el.includes('\x1B') ? '\x1B[39m' : '')));
+            .map((el) => el + (el.includes('\x1B') ? '\x1B[39m' : ''));
         return new TextboxBuilder()
             .addLines(lines)
             .setTitle(chalk.yellow(args[1]))
@@ -155,6 +170,49 @@ const { prompt } = inquirer;
     }
     if (['-v', '-version', '--v', '--version'].includes(args[0])) {
         return console.log(`${chalk.redBright('Redstart')} v${version}`);
+    }
+    if (['-i', '--init', '-t', '--template'].includes(args[0])) {
+        const templateFolder = join(sourcePath, 'templates');
+        const files = readdirSync(templateFolder, { withFileTypes: true })
+            .filter((el) => el.isFile())
+            .map((el) => el.name)
+            .filter((el) => el.endsWith('.rsproj'));
+        const { file, fileName } = await prompt([
+            {
+                type: 'list',
+                name: 'file',
+                choices: files.map((el) => ({
+                    name: el.substring(0, el.length - 7),
+                    value: el,
+                })),
+            },
+            {
+                type: 'input',
+                name: 'fileName',
+            },
+        ]);
+        console.log(file);
+        const preset = await parseTemplate(
+            readFileSync(join(templateFolder, file)).toString()
+        );
+        if (!preset)
+            console.error(
+                chalk.redBright('[!] Error while inserting the preset')
+            );
+        if (existsSync(join(process.cwd(), fileName + '.rsproj')))
+            console.error(
+                chalk.redBright(
+                    '[!] Error: File with the name ' +
+                        fileName +
+                        '.rsproj already exists'
+                )
+            );
+        await writeFile(
+            join(process.cwd(), fileName + '.rsproj'),
+            preset || ''
+        );
+        console.log(chalk.greenBright('[+] Wrote ' + fileName + '.rsproj'));
+        return;
     }
     if (args[0]) configPath = path.resolve(process.cwd(), args[0]);
     else {

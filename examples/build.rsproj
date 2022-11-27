@@ -6,9 +6,7 @@
 [@install/node]
 # Required
 packages: axios, chalk@4.1.2, typescript, @types/node
-language: typescript
 packageManager: pnpm
-mainFile: src/main.ts
 
 [echo]
 message: Hello, World! This:: should be followed by nothing# When you see this, there's a problem going on :<
