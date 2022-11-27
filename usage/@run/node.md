@@ -1,6 +1,6 @@
 [<- Back](../index.md)
 
-## @run/node.md
+## @run/node
 
 Run your node application
 
