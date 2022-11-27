@@ -1,6 +1,6 @@
 {
 	"name": "redstart",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "A quick way to start your nodejs project 🚀",
 	"main": "index.js",
 	"scripts": {
@@ -21,8 +21,10 @@
 		"figlet": "^1.5.2",
 		"gradient-string": "^2.0.2",
 		"inquirer": "8.2.0",
+		"markdown-to-txt": "^2.0.1",
 		"moment": "^2.29.4",
 		"nanospinner": "^1.1.0",
+		"redstart": "link:",
 		"typescript": "^4.8.4"
 	},
 	"bin": "src/bin/main.js"

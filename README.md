@@ -15,14 +15,16 @@ RedStart comes with its own file format. It is a custom format for simple config
 To get started, just create a file ending with `.rsproj`.
 
 > # Info
+>
 > Comments are prefixed with '#' and go to the end of the line. The line numbering ignores comments and empty lines. Iex:
+>
 > ```
 > # aaa
 > # abbbb
 > 1. line
 > #cccc
 > 2. line
-> 
+>
 > 3. line
 > ```
 
@@ -34,6 +36,8 @@ You start the config by putting the module name in Square Brackets. After that, 
 Syntax:
 
 ```
+--redstartConfigVariable: value
+--dbgprint: true
 # ...modules
 echo, @install/node
 
@@ -48,15 +52,16 @@ language: ts,
 packageManager: pnpm
 ```
 
+**Note**: To configure redstart, put -- at the start of the key. Refer to the [Redstart Global Configuration Reference](./usage/redstartGlobalConfig.md) for the usage.
+
 ### Important!
 
 The capitalization of the keys and the values is important.
 
 ## Datatypes
 
-- Boolean: true/false
-- Array: Values, without quotes, seperated by ','. After and before the ',', all whitespaces (' ') will be trimmed
-
+-   Boolean: true/false
+-   Array: Values, without quotes, seperated by ','. After and before the ',', all whitespaces (' ') will be trimmed
 
 ## Example
 
@@ -81,8 +86,12 @@ language: ts
 additional: test/
 ```
 
-Feel free to check out the [example file](examples/example.rsproj)!
+Feel free to check out the [example file](examples/build.rsproj)!
 
 ## License
 
 RedStart is licensed under the GNU General Public License v3.0. See [LICENSE](LICENSE) for more information.
+
+## Contributing
+
+> Read [CONTRIBUTE.md](./CONTRIBUTE.md)

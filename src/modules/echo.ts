@@ -1,6 +1,11 @@
-import chalk from "chalk";
-import { is } from "../lib/utils";
-import { Module } from "../types";
+/**
+ * @license GPL3
+ * @author FishingHacks <https://github.com/FishingHacks>
+ */
+
+import chalk from 'chalk';
+import { is } from '../lib/utils';
+import { Module } from '../types';
 
 const translator = {
     red: chalk.redBright,
@@ -14,14 +19,14 @@ const translator = {
 };
 
 export default {
-    validate(config, cwd) {
+    validate(config) {
         return (
             is.set(config.message) &&
             is.str(config.message) &&
-            config.message !== ""
+            config.message !== ''
         );
     },
-    initiate(config, cwd) {
+    initiate(config) {
         if (config.color && Object.keys(translator).includes(config.color))
             return console.log(
                 translator[config.color as keyof typeof translator](
