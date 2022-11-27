@@ -3,11 +3,10 @@
  * @author FishingHacks <https://github.com/FishingHacks>
  */
 
-import { createSpinner } from 'nanospinner';
 import { sync as spawnSync } from 'cross-spawn';
 import { Module } from '../../types';
 import chalk from 'chalk';
-import { is } from '../../lib/utils';
+import { is, createSpinner } from '../../lib/utils';
 
 export default {
     validate: (config, cwd) => is.set(config.repository),

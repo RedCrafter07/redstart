@@ -37,7 +37,7 @@ export default {
             buildDirectory,
             allowJSFiles,
             '--pretty',
-            ...(await (await tree(cwd)).filter((el) => el.endsWith('.ts'))),
+            ...(await (await tree(cwd)).filter((el) => el.endsWith('.ts') && !el.endsWith('.d.ts'))),
         ].filter((el) => el !== undefined) as string[];
         addTimeSlice('Running tsc ');
         if (redstartConfig.dbgprint === 'true')

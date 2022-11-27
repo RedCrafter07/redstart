@@ -4,10 +4,9 @@
  */
 
 import { Module } from '../../types';
-import { is } from '../../lib/utils';
+import { is,createSpinner } from '../../lib/utils';
 import { sync as spawnSync } from 'cross-spawn';
 import chalk from 'chalk';
-import { createSpinner } from 'nanospinner';
 import { lstat, mkdir, readdir, readlink } from 'fs/promises';
 import { join } from 'path';
 

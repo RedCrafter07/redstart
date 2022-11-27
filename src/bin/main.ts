@@ -16,6 +16,7 @@ import { version } from '../../package.json';
 import { createTimeTracker, TextboxBuilder } from '../lib/utils';
 import markdownToTxt from 'markdown-to-txt';
 import parseTemplate from '../lib/templateParser';
+import { format } from 'util';
 
 const oldConsoleLog = console.log;
 const oldConsoleError = console.error;
@@ -39,10 +40,9 @@ function configureLogForModule(module: string) {
         oldConsoleWarn(
             chalk.yellowBright(inspectPrefixed('[' + module + ']', args))
         );
-    console.error = (...args) =>
-        oldConsoleError(
-            chalk.redBright(inspectPrefixed('[' + module + ']', args))
-        );
+    console.error = (...args) => {
+        throw new Error(format(...args));
+    };
 }
 
 function resetLog() {
@@ -58,7 +58,7 @@ const args = argv.slice(2);
 const { prompt } = inquirer;
 
 (async () => {
-    let configPath: string;
+    let configPath: string = process.cwd();
     if (['--h', '-h', '-help', '--help'].includes(args[0])) {
         return new TextboxBuilder()
             .setTitle(chalk.blue('Usage'))
@@ -168,9 +168,6 @@ const { prompt } = inquirer;
             .setMinLength(50)
             .log();
     }
-    if (['-v', '-version', '--v', '--version'].includes(args[0])) {
-        return console.log(`${chalk.redBright('Redstart')} v${version}`);
-    }
     if (['-i', '--init', '-t', '--template'].includes(args[0])) {
         const templateFolder = join(sourcePath, 'templates');
         const files = readdirSync(templateFolder, { withFileTypes: true })
@@ -213,39 +210,14 @@ const { prompt } = inquirer;
         );
         console.log(chalk.greenBright('[+] Wrote ' + fileName + '.rsproj'));
         return;
-    }
-    if (args[0]) configPath = path.resolve(process.cwd(), args[0]);
-    else {
-        const configFiles = (
-            await readdir(process.cwd(), {
-                withFileTypes: true,
-            })
-        ).filter((f) => f.isFile() && f.name.endsWith('.rsproj'));
-
-        const { config: newConf } = await prompt([
-            {
-                type: 'list',
-                name: 'config',
-                choices: configFiles.map((f) => ({
-                    name: f.name,
-                    value: f.name,
-                })),
-            },
-        ]);
-
-        configPath = path.resolve(process.cwd(), newConf);
-    }
-    if (lstatSync(configPath).isDirectory()) {
+    } else {
+        configPath = join(configPath, args[0]);
         const configFiles = (
             await readdir(configPath, {
                 withFileTypes: true,
             })
         ).filter((f) => f.isFile() && f.name.endsWith('.rsproj'));
 
-        if (configFiles.length === 0) {
-            oldConsoleLog(chalk.redBright('[!] No config file found!'));
-            process.exit(1);
-        }
         if (configFiles.length === 1) {
             configPath = join(configPath, configFiles[0].name);
         } else {
@@ -351,8 +323,12 @@ const { prompt } = inquirer;
                         '[!] Executing of module ' + modules[i] + ' failed.'
                     )
                 );
-                oldConsoleLog(e);
-                process.exit(1);
+                oldConsoleLog(
+                    e.stack && typeof e.stack === 'string'
+                        ? chalk.red(e.stack)
+                        : e
+                );
+                if (redstartConfig.exitOnError) process.exit(1);
             }
         }
         resetLog();

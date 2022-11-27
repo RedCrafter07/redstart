@@ -15,6 +15,7 @@ specifiers:
   markdown-to-txt: ^2.0.1
   moment: ^2.29.4
   nanospinner: ^1.1.0
+  redstart: 'link:'
   typescript: ^4.8.4
 
 dependencies:
@@ -32,6 +33,7 @@ dependencies:
   markdown-to-txt: 2.0.1
   moment: 2.29.4
   nanospinner: 1.1.0
+  redstart: 'link:'
   typescript: 4.8.4
 
 packages:
