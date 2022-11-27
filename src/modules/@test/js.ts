@@ -47,4 +47,6 @@ export default {
             console.error(e);
         }
     },
+    required: ['testfile'],
+    optional: []
 } as Module;

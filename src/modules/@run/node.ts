@@ -60,4 +60,6 @@ export default {
                 .join('\n')
         );
     },
+    required: ['mainFile'],
+    optional: ['envFile', 'arguments'],
 } as Module;

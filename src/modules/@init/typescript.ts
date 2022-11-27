@@ -10,4 +10,6 @@ export default {
             console.error(chalk.redBright('[!] TSC is not installed'));
         else console.log(chalk.greenBright('[+] Initialized typescript'));
     },
+    optional: [],
+    required: []
 } as Module;

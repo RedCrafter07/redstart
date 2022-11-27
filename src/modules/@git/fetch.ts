@@ -68,4 +68,6 @@ export default {
         });
         gitSpinner.stop();
     },
+    required: ['repository'],
+    optional: ['branch']
 } as Module;

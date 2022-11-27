@@ -35,6 +35,8 @@ export default {
         }
         writeFileSync(join(cwd, '.gitignore'), gitignore.join('\n'));
     },
+    required: ['language'],
+    optional: ['additional'],
 } as Module;
 
 function getGitIgnoreForLanguage(language: string) {

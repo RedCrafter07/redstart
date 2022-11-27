@@ -75,4 +75,6 @@ export default {
 
         console.log(chalk.green('[+] Initialized project successfully!'));
     },
+    required: ['packages', 'packageManager'],
+    optional: []
 } as Module;

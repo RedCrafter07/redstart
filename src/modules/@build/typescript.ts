@@ -55,6 +55,8 @@ export default {
             console.log(chalk.greenBright('[+] Compilation successful'));
         }
     },
+    required: [],
+    optional: ['tsFilePath', 'sourceDirectory', 'buildDirectory', 'allowJSFiles'],
 } as Module;
 
 async function tree(directory: string): Promise<string[]> {
