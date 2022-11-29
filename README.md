@@ -88,6 +88,32 @@ additional: test/
 
 Feel free to check out the [example file](examples/build.rsproj)!
 
+## Getting help
+
+Run `redstart -h`
+
+## Other cli commands
+
+**Getting the available modules**
+
+Run `redstart <-m|--modules>`
+
+**Getting the module usage information**
+
+Run `redstart <-u|--usage> modulename`
+
+**Using a template**
+
+Run `redstart <-i|--init|-t|--template>`
+
+**Running the redstart file setup wizard**
+
+Run `redstart setup`
+
+This will help you easily create .rsproj files
+
+---
+
 ## License
 
 RedStart is licensed under the GNU General Public License v3.0. See [LICENSE](LICENSE) for more information.

@@ -20,4 +20,6 @@ export type ValidateFunction = (
 export interface Module {
     validate: ValidateFunction;
     initiate: InitiateFunction;
+    required: string[];
+    optional: string[];
 }

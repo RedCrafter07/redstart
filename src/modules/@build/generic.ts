@@ -22,6 +22,8 @@ export default {
             console.error(chalk.redBright('[!] Error during build'));
         console.error(compile.output.filter(el => el !== null).join("\n"));
     },
+    required: ['command'],
+    optional: ['arguments'],
 } as Module;
 
 function parseArguments(arr: string | undefined | null): string[] {

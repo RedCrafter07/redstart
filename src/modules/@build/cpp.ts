@@ -4,7 +4,7 @@
  */
 
 import { Module } from '../../types';
-import { is,createSpinner } from '../../lib/utils';
+import { is, createSpinner } from '../../lib/utils';
 import { sync as spawnSync } from 'cross-spawn';
 import chalk from 'chalk';
 import { lstat, mkdir, readdir, readlink } from 'fs/promises';
@@ -67,6 +67,8 @@ export default {
             );
         }
     },
+    required: ['fileName', 'sourceDirectory'],
+    optional: ['optimizations', 'buildDirectory'],
 } as Module;
 
 async function tree(directory: string): Promise<string[]> {

@@ -6,7 +6,7 @@
  */
 
 import chalk from 'chalk';
-import { existsSync, lstatSync, readdirSync, readFileSync } from 'fs';
+import { existsSync } from 'fs';
 import { readdir, readFile, writeFile } from 'fs/promises';
 import inquirer from 'inquirer';
 import path, { join } from 'path';
@@ -17,6 +17,8 @@ import { createTimeTracker, TextboxBuilder } from '../lib/utils';
 import markdownToTxt from 'markdown-to-txt';
 import parseTemplate from '../lib/templateParser';
 import { format } from 'util';
+import runSetupSystem from '../lib/setupSystem';
+inquirer.registerPrompt('search-list', require('inquirer-search-list'));
 
 const oldConsoleLog = console.log;
 const oldConsoleError = console.error;
@@ -90,7 +92,7 @@ const { prompt } = inquirer;
                 `${chalk.redBright('redstart')} ${chalk.yellow(
                     '-u --usage'
                 )} ${chalk.cyan('<modulename>')} ${chalk.greenBright(
-                    '- Get the avilable modules for redstart'
+                    '- Get the module usage information'
                 )}`
             )
             .addLine(
@@ -105,6 +107,13 @@ const { prompt } = inquirer;
                     '-t --template'
                 )} ${chalk.greenBright(
                     ' - Initialize redstart with a template'
+                )}`
+            )
+            .addLine(
+                `${chalk.redBright('redstart')} ${chalk.yellow(
+                    'setup'
+                )} ${chalk.greenBright(
+                    ' - Run the redstart file setup wizard'
                 )}`
             )
             .addLine('')
@@ -170,7 +179,7 @@ const { prompt } = inquirer;
     }
     if (['-i', '--init', '-t', '--template'].includes(args[0])) {
         const templateFolder = join(sourcePath, 'templates');
-        const files = readdirSync(templateFolder, { withFileTypes: true })
+        const files = (await readdir(templateFolder, { withFileTypes: true }))
             .filter((el) => el.isFile())
             .map((el) => el.name)
             .filter((el) => el.endsWith('.rsproj'));
@@ -190,7 +199,7 @@ const { prompt } = inquirer;
         ]);
         console.log(file);
         const preset = await parseTemplate(
-            readFileSync(join(templateFolder, file)).toString()
+            await readFile(join(templateFolder, file)).toString()
         );
         if (!preset)
             console.error(
@@ -209,6 +218,46 @@ const { prompt } = inquirer;
             preset || ''
         );
         console.log(chalk.greenBright('[+] Wrote ' + fileName + '.rsproj'));
+        return;
+    } else if (args[0] === 'setup') {
+        console.log(chalk.redBright('RedStart Setup Manager.'));
+        console.log(chalk.yellow('Collecting modules...'));
+        const moduleNames = (await tree(join(sourcePath, 'modules'))).filter(
+            (el) => el.endsWith('.js')
+        );
+        const modules: Record<
+            string,
+            { optional: string[]; required: string[] }
+        > = {};
+        for (const n of moduleNames) {
+            const values = require(join('../modules', n));
+            if (
+                values.default &&
+                values.default.required &&
+                values.default.optional &&
+                values.default.required instanceof Array &&
+                values.default.optional instanceof Array
+            ) {
+                modules[n.substring(0, n.length-3)] = {
+                    optional: values.default.optional,
+                    required: values.default.required,
+                };
+            }
+        }
+
+        const file = await runSetupSystem(modules);
+        let filename;
+        while (true) {
+            filename = (await prompt([
+                { type: 'input', name: 'filename' },
+            ])).filename;
+            if (existsSync(join(process.cwd(), filename + '.rsproj'))) console.error(chalk.redBright('[!] File wit the filename ' + filename + ' already exists!'));
+            else break;
+        }
+        await writeFile(join(process.cwd(), filename + '.rsproj'), file);
+        console.log(
+            chalk.greenBright('[+] Wrote file ' + filename + '.rsproj')
+        );
         return;
     } else {
         configPath = join(configPath, args[0]);

@@ -35,4 +35,6 @@ export default {
             );
         else return console.log(config.message);
     },
+    required: ['message'],
+    optional: ['color'],
 } as Module;
